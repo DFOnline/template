@@ -41,5 +41,8 @@
 	},
 	"svelte": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"df.ts": "github:DFOnline/df.ts"
+	}
 }
