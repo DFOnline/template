@@ -17,7 +17,7 @@
                             <span class="chest"></span>
                         {/if}
                     </div>
-                    <div class="material">
+                    <div class={`material ${block.block}`}>
                         <div class="sign">
                             <span>
                                 {block.block}
@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 {#if !(block.block.includes('if') || block.block === 'repeat')}
-                    <span class="right"></span>
+                    <div class="right"></div>
                 {/if}
             {/if}
         </li>
@@ -56,18 +56,17 @@
 
     ul {
         list-style: none;
+        display: flex;
     }
 
     li {
         height: 20em;
-        width: 20em;
-        aspect-ratio: 1;
-        display: grid;
-        grid-template-columns: 50% 50%;
-        grid-template-rows: 100%;
+        display: flex;
     }
 
     .left {
+        height: 20em;
+        width: 10em;
         display: grid;
         grid-template-rows: 50% 50%;
     }
@@ -75,7 +74,6 @@
     .material {
         display: flex;
         align-content: center;
-        background-image: url('./media/blocks/event.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
@@ -106,10 +104,32 @@
     }
 
     .right {
-        margin-top: 100%;
+        height: 10em;
+        width: 10em;
         background-image: url('./media/blocks/stone.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center bottom;
+        margin-top: 10em;
     }
+
+    /* I recognise this from somewhere */
+    .event         { background-image: url( ./media/blocks/event.png         );}
+    .player_action { background-image: url( ./media/blocks/player_action.png );}
+    .if_player     { background-image: url( ./media/blocks/if_player.png     );}
+    .process       { background-image: url( ./media/blocks/process.png       );}
+    .start_process { background-image: url( ./media/blocks/start_process.png );}
+    .func          { background-image: url( ./media/blocks/func.png          );}
+    .call_func     { background-image: url( ./media/blocks/call_func.png     );}
+    .entity_event  { background-image: url( ./media/blocks/entity_event.png  );}
+    .entity_action { background-image: url( ./media/blocks/entity_action.png );}
+    .if_entity     { background-image: url( ./media/blocks/if_entity.png     );}
+    .if_var        { background-image: url( ./media/blocks/if_var.png        );}
+    .set_var       { background-image: url( ./media/blocks/set_var.png       );}
+    .if_game       { background-image: url( ./media/blocks/if_game.png       );}
+    .game_action   { background-image: url( ./media/blocks/game_action.png   );}
+    .repeat        { background-image: url( ./media/blocks/repeat.png        );}
+    .control       { background-image: url( ./media/blocks/control.png       );}
+    .select_obj    { background-image: url( ./media/blocks/select_obj.png    );}
+    .else          { background-image: url( ./media/blocks/else.png          );}
 </style>
