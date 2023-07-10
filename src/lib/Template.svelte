@@ -2,13 +2,34 @@
     import { ArgumentBlock, Block, Bracket, type Template } from 'df.ts'
 
     export let template: Template;
+    /**
+     * If blocks in brackets should be shifted.
+     */
+    export let stack: boolean = false;
+    let stackList : number[];
+    if(stack) {
+        let i : number = 0;
+        stackList = template.blocks.map((block) => {
+            if(block instanceof Bracket) {
+                if(block.direct == 'open') {
+                    const old = i;
+                    i++;
+                    return old;
+                }
+                if(block.direct == 'close') {
+                    i--;
+                }
+            }
+            return i;
+        })
+    }
 </script>
 
 <ul>
-    {#each template.blocks as block}
-        <li>
+    {#each template.blocks as block, i}
+        <li style={stack ? `padding-top: ${stackList[i] * 1.25}em;` : undefined}>
             {#if block instanceof Bracket}
-                {block.direct} {block.type}
+                <div class={`bracket ${block.direct} ${block.type}`}></div>
             {/if}
             {#if block instanceof Block}
                 <div class="left">
@@ -55,6 +76,8 @@
     }
 
     ul {
+        padding: 0;
+        margin: 0;
         list-style: none;
         display: flex;
     }
@@ -132,4 +155,26 @@
     .control       { background-image: url( ./media/blocks/control.png       );}
     .select_obj    { background-image: url( ./media/blocks/select_obj.png    );}
     .else          { background-image: url( ./media/blocks/else.png          );}
+
+    .bracket {
+        margin-top: 10em;
+        height: 10em;
+        width: 10em;
+        align-content: center;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .close {
+        margin-left: 10em;
+    }
+    .bracket.norm {
+        background-image: url(./media/blocks/piston.png);
+    }
+    .bracket.repeat {
+        background-image: url(./media/blocks/pistonSticky.png);
+    }
+    .bracket.close {
+        transform: scaleX(-1);
+    }
 </style>
