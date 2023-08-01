@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ArgumentBlock, Block, Bracket, type Template } from 'df.ts'
+    import { ArgumentBlock, Block, Bracket, idToName, nameToId, type Template } from 'df.ts'
 
     export let template: Template;
     /**
@@ -40,9 +40,11 @@
                     </div>
                     <div class={`material ${block.block}`}>
                         <div class="sign">
-                            <span>
-                                {block.block}
-                            </span>
+                            {#if block.block != 'else'}
+                                <span>
+                                    {idToName.get(block.block)}
+                                </span>
+                            {/if}
                             <span>
                                 {#if 'secondLine' in block}
                                     {block.secondLine}
