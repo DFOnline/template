@@ -1,11 +1,16 @@
 <script lang="ts">
-    import { ArgumentBlock, Block, Bracket, idToName, nameToId, type Template } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, nameToId, type Template } from 'df.ts'
 
     export let template: Template;
     /**
      * If blocks in brackets should be shifted.
      */
     export let stack: boolean = false;
+    /**
+     * Allows disbaling of opening chests. Disabling reduces JS.
+     */
+    export let openableChests: boolean = true;
+
     let stackList : number[];
     if(stack) {
         let i : number = 0;
@@ -23,6 +28,29 @@
             return i;
         })
     }
+
+    function chestClick(event : MouseEvent|KeyboardEvent) {
+        if(event.target instanceof HTMLDialogElement) {
+            event.target.close();
+        }
+        if((event.target as HTMLElement).classList.contains('chest')) {
+            if(event instanceof KeyboardEvent) {
+                if(!(event.key === 'Enter' || event.key === ' ')) {
+                    return;
+                }
+            }
+            ((event.target as HTMLSpanElement).querySelector('dialog') as HTMLDialogElement).showModal()
+        }
+    }
+
+    // TODO: move this in to df.ts Arguments
+    function sortInventory(items?: Arguments) : (Argument | undefined)[] {
+        const sorted = new Array(9*3);
+        items?.items.forEach(item => {
+            sorted[item.slot] = item;
+        });
+        return sorted;
+    }
 </script>
 
 <ul>
@@ -35,7 +63,26 @@
                 <div class="left">
                     <div class="top">
                         {#if block instanceof ArgumentBlock}
-                            <span class="chest"></span>
+                            <span class={`chest ${openableChests ? 'clickable' : ''}`} on:click={openableChests ? chestClick : undefined} on:keydown={openableChests ? chestClick : undefined} role="button" tabindex=0>
+                                {#if openableChests}
+                                    <dialog style="cursor: auto;">
+                                        <div>
+                                            <h1>{idToName.get(block.block)} {#if (block instanceof DataBlock || block instanceof ActionBlock)} {block.secondLine}{/if}</h1>
+                                            <table>
+                                                    {#each sortInventory(block.args) as item}
+                                                        <td class={`slot`}>
+                                                            {#if item != null}
+                                                                <div class={`item ${item.item.id}`}>
+                                                                    {item.item.id}
+                                                                </div>
+                                                            {/if}
+                                                        </td>
+                                                    {/each}
+                                            </table>
+                                        </div>
+                                    </dialog>
+                                {/if}
+                            </span>
                         {/if}
                     </div>
                     <div class={`material ${block.block}`}>
@@ -127,6 +174,9 @@
         background-repeat: no-repeat;
         background-position: center bottom;
     }
+    .chest.clickable {
+        cursor: pointer;
+    }
 
     .right {
         height: 10em;
@@ -178,5 +228,35 @@
     }
     .bracket.close {
         transform: scaleX(-1);
+    }
+
+    dialog {
+        padding: none;
+        background: none;
+        border: none;
+    }
+
+    dialog > div {
+        padding: 1em;
+        background: white;
+        border: solid 5px black;
+    }
+
+    dialog h1 {
+        margin-top: 0;
+    }
+
+    dialog table {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+        grid-auto-rows: 1fr 1fr 1fr;
+    }
+
+    dialog table td.slot div.item {
+        background-size: cover;
+    }
+    
+    .var {
+        background-image: url(./media/items/var.png);
     }
 </style>
