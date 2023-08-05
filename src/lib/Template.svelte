@@ -252,11 +252,14 @@
         grid-auto-rows: 1fr 1fr 1fr;
     }
 
-    dialog table td.slot div.item {
+    .slot {
+        aspect-ratio: 1;
+    }
+    .item {
         background-size: cover;
+        height: 100%;
+        widows: 100%;
     }
     
-    .var {
-        background-image: url(./media/items/var.png);
-    }
+    .var {background-image: url(./media/items/var.png);}
 </style>
