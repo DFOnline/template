@@ -72,9 +72,7 @@
                                                     {#each sortInventory(block.args) as item}
                                                         <td class={`slot`}>
                                                             {#if item != null}
-                                                                <div class={`item ${item.item.id}`}>
-                                                                    {item.item.id}
-                                                                </div>
+                                                                <div class={`item ${item.item.id}`}></div>
                                                             {/if}
                                                         </td>
                                                     {/each}
@@ -261,5 +259,13 @@
         widows: 100%;
     }
     
+    .txt {background-image: url(./media/items/txt.png);}
+    .num {background-image: url(./media/items/num.png);}
     .var {background-image: url(./media/items/var.png);}
+    .snd {background-image: url(./media/items/snd.png);}
+    .pot {background-image: url(./media/items/pot.png);}
+    .loc {background-image: url(./media/items/loc.png);}
+    .vec {background-image: url(./media/items/vec.png);}
+    .part {background-image: url(./media/items/part.png);}
+    .g_val {background-image: url(./media/items/g_val.png);}
 </style>
