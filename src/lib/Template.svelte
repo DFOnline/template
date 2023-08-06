@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named } from 'df.ts'
 
     export let template: Template;
     /**
@@ -47,7 +47,7 @@
     function sortInventory(items?: Arguments) : (Argument | undefined)[] {
         const sorted = new Array(9*3);
         items?.items.forEach(item => {
-            sorted[item.slot] = item;
+            sorted[item.slot] = Argument.parse(item);
         });
         return sorted;
     }
@@ -73,7 +73,12 @@
                                                         <td class={`slot`}>
                                                             {#if item != null}
                                                                 <div class={`item ${item.item.id}`}>
-                                                                    <span class="tooltip">Hello</span>
+                                                                    <span class="tooltip">
+                                                                        {console.log(item.item)}
+                                                                        {#if item.item instanceof Named}
+                                                                            {item.item.data.name}
+                                                                        {/if}
+                                                                    </span>
                                                                 </div>
                                                             {/if}
                                                         </td>
