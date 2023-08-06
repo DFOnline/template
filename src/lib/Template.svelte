@@ -72,7 +72,9 @@
                                                     {#each sortInventory(block.args) as item}
                                                         <td class={`slot`}>
                                                             {#if item != null}
-                                                                <div class={`item ${item.item.id}`}></div>
+                                                                <div class={`item ${item.item.id}`}>
+                                                                    <span class="tooltip">Hello</span>
+                                                                </div>
                                                             {/if}
                                                         </td>
                                                     {/each}
@@ -257,9 +259,23 @@
         outline: 2px solid black;
     }
     .item {
+        position: relative;
         background-size: cover;
         height: 100%;
         widows: 100%;
+    }
+    .item .tooltip {
+        visibility: hidden;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: rgba(16, 0, 16, calc(240/255));
+        color: white;
+        z-index: 1;
+        user-select: none;
+    }
+    .item:hover .tooltip {
+        visibility: visible;
     }
     
     .txt {background-image: url(./media/items/txt.png);}
