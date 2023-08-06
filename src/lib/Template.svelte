@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, nameToId, type Template } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
 
     export let template: Template;
     /**
@@ -7,7 +7,7 @@
      */
     export let stack: boolean = false;
     /**
-     * Allows disbaling of opening chests. Disabling reduces JS.
+     * Allows disbaling of opening chests.
      */
     export let openableChests: boolean = true;
 
