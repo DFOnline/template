@@ -269,8 +269,15 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        background-color: rgba(16, 0, 16, calc(240/255));
+        padding: calc(var(--tooltip-size,2) * 1px);
+        font-family: 'Minecraft';
+        font-size: calc(var(--tooltip-size,2) * 0.5em);
         color: white;
+        background-color: #100010f0;
+        border: solid calc(var(--tooltip-size,2) * 1px);
+        border-image: linear-gradient(#5000FF50, #28007f50) var(--tooltip-size,2);
+        border-radius: calc(var(--tooltip-size,2) * 1px);
+        outline: #100010f0 calc(var(--tooltip-size,2) * 1px);
         z-index: 1;
         user-select: none;
     }

@@ -22,4 +22,4 @@
     </label>
 </div>
 
-<Template {stack} {openableChests} {template} />
+<Template {stack} {openableChests} {template} --tooltip-size="3"/>
