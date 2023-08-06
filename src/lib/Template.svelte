@@ -232,6 +232,7 @@
         padding: none;
         background: none;
         border: none;
+        padding: 0;
     }
 
     dialog > div {
@@ -248,10 +249,12 @@
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         grid-auto-rows: 1fr 1fr 1fr;
+        outline: 4px solid black;
     }
 
     .slot {
         aspect-ratio: 1;
+        outline: 2px solid black;
     }
     .item {
         background-size: cover;
