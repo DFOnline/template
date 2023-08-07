@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location } from 'df.ts'
 	import ColoredText from './ColoredText.svelte';
 
     export let template: Template;
@@ -31,8 +31,11 @@
     }
 
     function chestClick(event : MouseEvent|KeyboardEvent) {
-        if(event.target instanceof HTMLDialogElement) {
-            event.target.close();
+        if(event.target instanceof HTMLElement) {
+            let diag = event.target.classList.contains('bg') ? event.target.parentElement : event.target
+            if(diag instanceof HTMLDialogElement) {
+                diag.close();
+            }
         }
         if((event.target as HTMLElement).classList.contains('chest')) {
             if(event instanceof KeyboardEvent) {
@@ -52,6 +55,23 @@
         });
         return sorted;
     }
+
+    const scopeToName : Record<string, string> = {
+        'local': 'LOCAL',
+        'unsaved': 'GAME',
+        'saved': 'SAVE',
+    }
+
+    /**
+     * How df shows numbers in locations.
+     * Examples are:
+     * 0   : 0.0
+     * 1.5 : 1.5
+     * 1.25: 1.25
+     */
+    function numberDigits(number : number) : string {
+        return number.toFixed(2).replace(/0$/,'')
+    }
 </script>
 
 <ul>
@@ -67,26 +87,38 @@
                             <span class={`chest ${openableChests ? 'clickable' : ''}`} on:click={openableChests ? chestClick : undefined} on:keydown={openableChests ? chestClick : undefined} role="button" tabindex=0>
                                 {#if openableChests}
                                     <dialog style="cursor: auto;">
-                                        <div>
-                                            <h1>{idToName.get(block.block)} {#if (block instanceof DataBlock || block instanceof ActionBlock)} {block.secondLine}{/if}</h1>
-                                            <table>
-                                                    {#each sortInventory(block.args) as item}
-                                                        <td class={`slot`}>
-                                                            {#if item != null}
-                                                                <div class={`item ${item.item.id}`}>
-                                                                    <span class="tooltip">
-                                                                        {#if item.item instanceof Named}
-                                                                            <ColoredText text={item.item.data.name} />
-                                                                        {/if}
-                                                                        {#if item.item.id == 'var'}
-                                                                            <br> {item.item.data.scope}
-                                                                        {/if}
-                                                                    </span>
-                                                                </div>
-                                                            {/if}
-                                                        </td>
-                                                    {/each}
-                                            </table>
+                                        <div class="bg">
+                                            <div>
+                                                <h1>{idToName.get(block.block)} {#if (block instanceof DataBlock || block instanceof ActionBlock)} {block.secondLine}{/if}</h1>
+                                                <table>
+                                                        {#each sortInventory(block.args) as item}
+                                                            <td class={`slot`}>
+                                                                {#if item != null}
+                                                                    <div class={`item ${item.item.id}`}>
+                                                                        <span class="tooltip">
+                                                                            {#if item.item instanceof Named}
+                                                                                <ColoredText text={item.item.data.name} />
+                                                                            {/if}
+                                                                            {#if item.item.id == 'var'}
+                                                                                <br> <span class={item.item.data.scope}>{scopeToName[item.item.data.scope]}</span>
+                                                                            {/if}
+                                                                            {#if item.item instanceof Location}
+                                                                                <span class="green">Location</span>
+                                                                                <br> <span class="light_gray">X: </span> <span>{numberDigits(item.item.data.loc.x)}</span>
+                                                                                <br> <span class="light_gray">Y: </span> <span>{numberDigits(item.item.data.loc.y)}</span>
+                                                                                <br> <span class="light_gray">Z: </span> <span>{numberDigits(item.item.data.loc.z)}</span>
+                                                                                {#if !item.item.data.isBlock}
+                                                                                    <br> <span class="light_gray">p: </span> <span>{numberDigits(item.item.data.loc.pitch ?? 0)}</span>
+                                                                                    <br> <span class="light_gray">y: </span> <span>{numberDigits(item.item.data.loc.yaw ?? 0)}</span>
+                                                                                {/if}
+                                                                            {/if}
+                                                                        </span>
+                                                                    </div>
+                                                                {/if}
+                                                            </td>
+                                                        {/each}
+                                                </table>
+                                            </div>
                                         </div>
                                     </dialog>
                                 {/if}
@@ -239,13 +271,21 @@
     }
 
     dialog {
-        padding: none;
         background: none;
         border: none;
         padding: 0;
+        margin: 0;
+        overflow: hidden;
     }
 
-    dialog > div {
+    dialog > .bg {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+    }
+
+    dialog .bg > div {
+        margin: auto;
         padding: 1em;
         background: white;
         border: solid 5px black;
@@ -287,7 +327,7 @@
         border-image: linear-gradient(#5000FF50, #28007f50) var(--tooltip-size,2);
         border-radius: calc(var(--tooltip-size,2) * 1px);
         outline: #100010f0 calc(var(--tooltip-size,2) * 1px);
-        z-index: 1;
+        z-index: 100;
         user-select: none;
         pointer-events: none;
     }
@@ -304,4 +344,19 @@
     .vec {background-image: url(./media/items/vec.png);}
     .part {background-image: url(./media/items/part.png);}
     .g_val {background-image: url(./media/items/g_val.png);}
+
+    .green,
+    .local {
+        color: #5F5
+    }
+
+    .light_gray,
+    .unsaved {
+        color: #AAA
+    }
+
+    .yellow,
+    .saved {
+        color: #FF5
+    }
 </style>
