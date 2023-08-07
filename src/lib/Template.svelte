@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location, Vector, Sound } from 'df.ts'
 	import ColoredText from './ColoredText.svelte';
 
     export let template: Template;
@@ -111,6 +111,19 @@
                                                                                     <br> <span class="light_gray">p: </span> <span>{numberDigits(item.item.data.loc.pitch ?? 0)}</span>
                                                                                     <br> <span class="light_gray">y: </span> <span>{numberDigits(item.item.data.loc.yaw ?? 0)}</span>
                                                                                 {/if}
+                                                                            {/if}
+                                                                            {#if item.item instanceof Vector}
+                                                                                <span class="vector">Vector</span>
+                                                                                <br> <span class="light_gray">X: </span> <span>{numberDigits(item.item.data.x)}</span>
+                                                                                <br> <span class="light_gray">Y: </span> <span>{numberDigits(item.item.data.y)}</span>
+                                                                                <br> <span class="light_gray">Z: </span> <span>{numberDigits(item.item.data.z)}</span>
+                                                                            {/if}
+                                                                            {#if item.item instanceof Sound}
+                                                                                <span class="blue">Sound</span>
+                                                                                <br> <span>{item.item.data.sound}</span>
+                                                                                <br>
+                                                                                <br> <span class="light_gray">Pitch: </span> <span>{item.item.data.pitch}</span>
+                                                                                <br> <span class="light_gray">Volume: </span> <span>{item.item.data.vol}</span>
                                                                             {/if}
                                                                         </span>
                                                                     </div>
@@ -347,16 +360,24 @@
 
     .green,
     .local {
-        color: #5F5
+        color: #5F5;
     }
 
     .light_gray,
     .unsaved {
-        color: #AAA
+        color: #AAA;
     }
 
     .yellow,
     .saved {
-        color: #FF5
+        color: #FF5;
+    }
+
+    .vector {
+        color: #2AFFAA;
+    }
+
+    .blue {
+        color: #55F;
     }
 </style>
