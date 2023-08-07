@@ -1,5 +1,6 @@
 <script lang="ts">
     import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named } from 'df.ts'
+	import ColoredText from './ColoredText.svelte';
 
     export let template: Template;
     /**
@@ -74,9 +75,11 @@
                                                             {#if item != null}
                                                                 <div class={`item ${item.item.id}`}>
                                                                     <span class="tooltip">
-                                                                        {console.log(item.item)}
                                                                         {#if item.item instanceof Named}
-                                                                            {item.item.data.name}
+                                                                            <ColoredText text={item.item.data.name} />
+                                                                        {/if}
+                                                                        {#if item.item.id == 'var'}
+                                                                            <br> {item.item.data.scope}
                                                                         {/if}
                                                                     </span>
                                                                 </div>
@@ -274,6 +277,7 @@
         position: absolute;
         top: 50%;
         left: 50%;
+        width: max-content;
         padding: calc(var(--tooltip-size,2) * 1px);
         font-family: 'Minecraft';
         font-size: calc(var(--tooltip-size,2) * 0.5em);
@@ -285,6 +289,7 @@
         outline: #100010f0 calc(var(--tooltip-size,2) * 1px);
         z-index: 1;
         user-select: none;
+        pointer-events: none;
     }
     .item:hover .tooltip {
         visibility: visible;
