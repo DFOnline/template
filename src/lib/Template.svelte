@@ -89,7 +89,7 @@
                                     <dialog style="cursor: auto;">
                                         <div class="bg">
                                             <div>
-                                                <h1>{idToName.get(block.block)} {#if (block instanceof DataBlock || block instanceof ActionBlock)} {block.secondLine}{/if}</h1>
+                                                <h1>{i + 1}: {idToName.get(block.block)} {#if (block instanceof DataBlock || block instanceof ActionBlock)} {block.secondLine}{/if}</h1>
                                                 <table>
                                                         {#each sortInventory(block.args) as item}
                                                             <td class={`slot`}>
@@ -185,13 +185,13 @@
     }
 
     li {
-        height: 20em;
+        height: calc(var(--block-size,var(--block-size,10em)) * 2);
         display: flex;
     }
 
     .left {
-        height: 20em;
-        width: 10em;
+        height: calc(var(--block-size,var(--block-size,10em)) * 2);
+        width: var(--block-size,10em);
         display: grid;
         grid-template-rows: 50% 50%;
     }
@@ -208,6 +208,7 @@
         margin: auto;
         height: 50%;
         width: 100%;
+        font-size: calc(var(--block-size,10em) / 10);
         font-family: 'Minecraft';
         display: grid;
         grid-template-rows: 1fr 1fr 1fr 1fr;
@@ -232,13 +233,13 @@
     }
 
     .right {
-        height: 10em;
-        width: 10em;
+        height: var(--block-size,10em);
+        width: var(--block-size,10em);
         background-image: url('./media/blocks/stone.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center bottom;
-        margin-top: 10em;
+        margin-top: var(--block-size,10em);
     }
 
     /* I recognise this from somewhere */
@@ -262,16 +263,16 @@
     .else          { background-image: url( ./media/blocks/else.png          );}
 
     .bracket {
-        margin-top: 10em;
-        height: 10em;
-        width: 10em;
+        margin-top: var(--block-size,10em);
+        height: var(--block-size,10em);
+        width: var(--block-size,10em);
         align-content: center;
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
     }
     .close {
-        margin-left: 10em;
+        margin-left: var(--block-size,10em);
     }
     .bracket.norm {
         background-image: url(./media/blocks/piston.png);
@@ -313,11 +314,13 @@
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
         grid-auto-rows: 1fr 1fr 1fr;
         outline: 4px solid black;
+        width: fit-content;
     }
 
     .slot {
         aspect-ratio: 1;
         outline: 2px solid black;
+        width: var(--slot-size,auto);
     }
     .item {
         position: relative;
@@ -331,15 +334,15 @@
         top: 50%;
         left: 50%;
         width: max-content;
-        padding: calc(var(--tooltip-size,2) * 1px);
+        padding: calc(var(--tooltip-scale,2) * 1px);
         font-family: 'Minecraft';
-        font-size: calc(var(--tooltip-size,2) * 0.5em);
+        font-size: calc(var(--tooltip-scale,2) * 0.5em);
         color: white;
         background-color: #100010f0;
-        border: solid calc(var(--tooltip-size,2) * 1px);
-        border-image: linear-gradient(#5000FF50, #28007f50) var(--tooltip-size,2);
-        border-radius: calc(var(--tooltip-size,2) * 1px);
-        outline: #100010f0 calc(var(--tooltip-size,2) * 1px);
+        border: solid calc(var(--tooltip-scale,2) * 1px);
+        border-image: linear-gradient(#5000FF50, #28007f50) var(--tooltip-scale,2);
+        border-radius: calc(var(--tooltip-scale,2) * 1px);
+        outline: #100010f0 calc(var(--tooltip-scale,2) * 2px);
         z-index: 100;
         user-select: none;
         pointer-events: none;
