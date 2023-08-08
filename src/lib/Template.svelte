@@ -83,7 +83,7 @@
             {#if block instanceof Block}
                 <div class="left">
                     <div class="top">
-                        {#if block instanceof ArgumentBlock}
+                        {#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
                             <span class={`chest ${openableChests ? 'clickable' : ''}`} on:click={openableChests ? chestClick : undefined} on:keydown={openableChests ? chestClick : undefined} role="button" tabindex=0>
                                 {#if openableChests}
                                     <dialog style="cursor: auto;">
