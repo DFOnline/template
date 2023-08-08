@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location, Vector, Sound } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location, Vector, Sound, Potion } from 'df.ts'
 	import ColoredText from './ColoredText.svelte';
 
     export let template: Template;
@@ -104,26 +104,33 @@
                                                                             {/if}
                                                                             {#if item.item instanceof Location}
                                                                                 <span class="green">Location</span>
-                                                                                <br> <span class="light_gray">X: </span> <span>{numberDigits(item.item.data.loc.x)}</span>
-                                                                                <br> <span class="light_gray">Y: </span> <span>{numberDigits(item.item.data.loc.y)}</span>
-                                                                                <br> <span class="light_gray">Z: </span> <span>{numberDigits(item.item.data.loc.z)}</span>
+                                                                                <br> <span class="lg">X: </span> <span>{numberDigits(item.item.data.loc.x)}</span>
+                                                                                <br> <span class="lg">Y: </span> <span>{numberDigits(item.item.data.loc.y)}</span>
+                                                                                <br> <span class="lg">Z: </span> <span>{numberDigits(item.item.data.loc.z)}</span>
                                                                                 {#if !item.item.data.isBlock}
-                                                                                    <br> <span class="light_gray">p: </span> <span>{numberDigits(item.item.data.loc.pitch ?? 0)}</span>
-                                                                                    <br> <span class="light_gray">y: </span> <span>{numberDigits(item.item.data.loc.yaw ?? 0)}</span>
+                                                                                    <br> <span class="lg">p: </span> <span>{numberDigits(item.item.data.loc.pitch ?? 0)}</span>
+                                                                                    <br> <span class="lg">y: </span> <span>{numberDigits(item.item.data.loc.yaw ?? 0)}</span>
                                                                                 {/if}
                                                                             {/if}
                                                                             {#if item.item instanceof Vector}
                                                                                 <span class="vector">Vector</span>
-                                                                                <br> <span class="light_gray">X: </span> <span>{numberDigits(item.item.data.x)}</span>
-                                                                                <br> <span class="light_gray">Y: </span> <span>{numberDigits(item.item.data.y)}</span>
-                                                                                <br> <span class="light_gray">Z: </span> <span>{numberDigits(item.item.data.z)}</span>
+                                                                                <br> <span class="lg">X: </span> <span>{numberDigits(item.item.data.x)}</span>
+                                                                                <br> <span class="lg">Y: </span> <span>{numberDigits(item.item.data.y)}</span>
+                                                                                <br> <span class="lg">Z: </span> <span>{numberDigits(item.item.data.z)}</span>
                                                                             {/if}
                                                                             {#if item.item instanceof Sound}
                                                                                 <span class="blue">Sound</span>
                                                                                 <br> <span>{item.item.data.sound}</span>
                                                                                 <br>
-                                                                                <br> <span class="light_gray">Pitch: </span> <span>{item.item.data.pitch}</span>
-                                                                                <br> <span class="light_gray">Volume: </span> <span>{item.item.data.vol}</span>
+                                                                                <br> <span class="lg">Pitch: </span> <span>{item.item.data.pitch}</span>
+                                                                                <br> <span class="lg">Volume: </span> <span>{item.item.data.vol}</span>
+                                                                            {/if}
+                                                                            {#if item.item instanceof Potion}
+                                                                                <span class="pot">Potion</span>
+                                                                                <br> <span>{item.item.data.pot}</span>
+                                                                                <br>
+                                                                                <br> <span class="lg">Amplifier: </span> <span>{item.item.data.amp.toFixed(0)}</span>
+                                                                                <br> <span class="lg">Duration: </span> <span>{item.item.data.dur >= 1000000 ? 'Infinite' : (item.item.data.dur % 20 == 0 ? `${Math.floor((item.item.data.dur / 20) / 60)}:${String((item.item.data.dur / 20) % 60).padStart(2, '0')}` : `${item.item.data.dur} ticks`)}</span>
                                                                             {/if}
                                                                         </span>
                                                                     </div>
@@ -367,6 +374,7 @@
     }
 
     .light_gray,
+    .lg,
     .unsaved {
         color: #AAA;
     }
@@ -382,5 +390,9 @@
 
     .blue {
         color: #55F;
+    }
+
+    .pot, .potion {
+        color: #FF557F;
     }
 </style>
