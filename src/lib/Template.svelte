@@ -140,7 +140,7 @@
                                                                                 <span class="pot">Potion</span>
                                                                                 <br> <span>{item.item.data.pot}</span>
                                                                                 <br>
-                                                                                <br> <span class="lg">Amplifier: </span> <span>{item.item.data.amp.toFixed(0)}</span>
+                                                                                <br> <span class="lg">Amplifier: </span> <span>{item.item.data.amp + 1}</span>
                                                                                 <br> <span class="lg">Duration: </span> <span>{item.item.data.dur >= 1000000 ? 'Infinite' : (item.item.data.dur % 20 == 0 ? `${Math.floor((item.item.data.dur / 20) / 60)}:${String((item.item.data.dur / 20) % 60).padStart(2, '0')}` : `${item.item.data.dur} ticks`)}</span>
                                                                             {/if}
                                                                             {#if item.item instanceof GameValue}
