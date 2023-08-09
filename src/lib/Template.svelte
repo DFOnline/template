@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, Variable, type Template, Named, Location, Vector, Sound, Potion } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template, Named, Location, Vector, Sound, Potion, GameValue } from 'df.ts'
 	import ColoredText from './ColoredText.svelte';
 
     export let template: Template;
@@ -60,6 +60,17 @@
         'local': 'LOCAL',
         'unsaved': 'GAME',
         'saved': 'SAVE',
+    }
+
+    const targetToColor : Record<string, string> = {
+        'Selection': 'green',
+        'Default': 'green',
+        'Killer': 'red',
+        'Damager': 'red',
+        'Victim': 'blue',
+        'Shooter': 'yellow',
+        'Projectile': 'aqua',
+        'LastEntity': 'yellow'
     }
 
     /**
@@ -131,6 +142,11 @@
                                                                                 <br>
                                                                                 <br> <span class="lg">Amplifier: </span> <span>{item.item.data.amp.toFixed(0)}</span>
                                                                                 <br> <span class="lg">Duration: </span> <span>{item.item.data.dur >= 1000000 ? 'Infinite' : (item.item.data.dur % 20 == 0 ? `${Math.floor((item.item.data.dur / 20) / 60)}:${String((item.item.data.dur / 20) % 60).padStart(2, '0')}` : `${item.item.data.dur} ticks`)}</span>
+                                                                            {/if}
+                                                                            {#if item.item instanceof GameValue}
+                                                                                <span>{item.item.data.type}</span>
+                                                                                <br>
+                                                                                <span class={targetToColor[item.item.data.target ?? 'Default']}>{item.item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.item.data.target}</span>
                                                                             {/if}
                                                                         </span>
                                                                     </div>
@@ -384,12 +400,20 @@
         color: #FF5;
     }
 
-    .vector {
-        color: #2AFFAA;
+    .red {
+        color: #F55;
     }
-
+    
     .blue {
         color: #55F;
+    }
+
+    .aqua {
+        color: #5FF;
+    }
+
+    .vector {
+        color: #2AFFAA;
     }
 
     .pot, .potion {
