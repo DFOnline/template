@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template, Named, Location, Vector, Sound, Potion, GameValue } from 'df.ts'
+    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template, Named, Location, Vector, Sound, Potion, GameValue, MinecraftItem } from 'df.ts'
 	import ColoredText from './ColoredText.svelte';
+    import { parse } from 'nbt-ts'
 
     export let template: Template;
     /**
@@ -105,8 +106,11 @@
                                                         {#each sortInventory(block.args) as item}
                                                             <td class={`slot`}>
                                                                 {#if item != null}
-                                                                    <div class={`item ${item.item.id}`}>
+                                                                    <div class={`item ${item.item.id}`} style={item.item instanceof MinecraftItem ? `background-image: url(https://dfonline.dev/public/images/${parse(item.item.data.item).id.split(':')[1].toUpperCase()}.png)` : undefined}>
                                                                         <span class="tooltip">
+                                                                            {#if item.item instanceof MinecraftItem}
+                                                                                {JSON.stringify(item.item.data.item)}
+                                                                            {/if}
                                                                             {#if item.item instanceof Named}
                                                                                 <ColoredText text={item.item.data.name} />
                                                                             {/if}
