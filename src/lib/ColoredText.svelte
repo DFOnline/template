@@ -30,8 +30,6 @@
         "k": "obfuscated"
     } as Record<string,'bold'|'italic'|'underlined'|'strikethrough'|'obfuscated'>));
 
-    console.log('======================= hello!!!')
-
     interface style {color?: string, italic?: boolean, bold?: boolean, strikethrough?: boolean, obfuscated?: boolean, underlined?: boolean}
     interface component extends style {text: string}
     function parse(text : string): component[] {
