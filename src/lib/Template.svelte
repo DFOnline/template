@@ -239,6 +239,8 @@
         padding: 0;
         margin: 0;
         overflow: hidden;
+        min-width: 100vw;
+        min-height: 100vh;
     }
 
     dialog > .bg {
