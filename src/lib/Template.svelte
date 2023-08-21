@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { ActionBlock, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
+    import { ActionBlock, ActionDump, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
 	import Item from './Item.svelte';
 
     export let template: Template;
+    export let actiondump: ActionDump | undefined = undefined;
     /**
      * If blocks in brackets should be shifted.
      */
@@ -76,7 +77,7 @@
                                                 <table>
                                                         {#each sortInventory(block.args) as item}
                                                             <td class={`slot`}>
-                                                                {#if item != null}<Item {item}/>{/if}
+                                                                {#if item != null}<Item {item} {actiondump}/>{/if}
                                                             </td>
                                                         {/each}
                                                 </table>

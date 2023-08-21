@@ -1,9 +1,11 @@
 <script lang="ts">
-    import { Argument, Named, Location, Vector, Sound, Potion, GameValue, MinecraftItem } from 'df.ts'
+    import { Argument, Named, Location, Vector, Sound, Potion, GameValue, MinecraftItem, BlockTag, ActionDump, CodeblockName } from 'df.ts'
     import ColoredText from './ColoredText.svelte';
     import { parse } from 'nbt-ts'
+	import type { Tag } from 'df.ts/lib/actiondump/action.js';
 
     export let item: Argument;
+    export let actiondump: ActionDump | undefined = undefined;
     export let endPoint = new URL('https://dfonline.dev/public/images');
 
     /**
@@ -34,16 +36,39 @@
         'LastEntity': 'yellow'
     }
 
+    let customIcon : string | undefined;
+
     let parsed : any = null;
     if(item.item instanceof MinecraftItem) {
         parsed = parse(item.item.data.item)
+        customIcon = parsed.id.split(':')[1].toUpperCase();
+    }
+
+    let tag: Tag | undefined;
+    if(item.item instanceof BlockTag) {
+        // TODO: check codeblock, not just action
+        tag = (actiondump?.actions.find(a => a.name == item.item.data.action)?.tags ?? []).find(t => t.name == item.item.data.tag);
+        customIcon = tag?.options.find(o => item.item.data.option == o.name)?.icon.material;
     }
 </script>
 
-    <div class={`item ${item.item.id}`} style={item.item instanceof MinecraftItem ? `background-image: url(${endPoint}/${parsed.id.split(':')[1].toUpperCase()}.png)` : undefined}>
+    <div class={`item ${item.item.id}`} style={customIcon != null ? `background-image: url(${endPoint}/${customIcon}.png)` : undefined}>
         <span class="tooltip">
             {#if item.item instanceof MinecraftItem}
                 {JSON.stringify(parsed)}
+            {/if}
+            {#if item.item instanceof BlockTag}
+                <span class="yellow">Tag: {item.item.data.tag}</span>
+                <br>
+                {#if actiondump != null}
+                    {#each tag?.options ?? [] as option}
+                    <br>
+                        <span class={item.item.data.option == option.name ? 'aqua' : 'lg'}>{#if item.item.data.option == option.name}<span class="cyan">»</span> {/if}{option.name}</span>
+                    {/each}
+                {/if}
+                {#if actiondump == null}
+                    <span class="aqua"><span class="cyan">»</span> {item.item.data.option}</span>
+                {/if}
             {/if}
             {#if item.item instanceof Named}
                 <ColoredText text={item.item.data.name} />
@@ -95,6 +120,7 @@
         background-size: cover;
         height: 100%;
         widows: 100%;
+        background-image: url(./media/items/invalid.png)
     }
     .item .tooltip {
         visibility: hidden;
@@ -151,6 +177,10 @@
     
     .blue {
         color: #55F;
+    }
+
+    .cyan {
+        color: #0AA;
     }
 
     .aqua {
