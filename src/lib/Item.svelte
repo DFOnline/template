@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Argument, Named, Location, Vector, Sound, Potion, GameValue, MinecraftItem, BlockTag, ActionDump, CodeblockName } from 'df.ts'
+    import { Argument, Location, Vector, Sound, Potion, GameValue, MinecraftItem, BlockTag, ActionDump, Component, Variable, Parameter, Text, Hint, Number } from 'df.ts'
     import ColoredText from './ColoredText.svelte';
     import { parse } from 'nbt-ts'
 	import type { Tag } from 'df.ts/lib/actiondump/action.js';
@@ -19,13 +19,14 @@
         return number.toFixed(2).replace(/0$/,'')
     }
 
-    const scopeToName : Record<string, string> = {
+    const scopeToName = {
         'local': 'LOCAL',
         'unsaved': 'GAME',
         'saved': 'SAVE',
-    }
+        'line': 'LINE',
+    } as const
 
-    const targetToColor : Record<string, string> = {
+    const targetToColor = {
         'Selection': 'green',
         'Default': 'green',
         'Killer': 'red',
@@ -34,7 +35,7 @@
         'Shooter': 'yellow',
         'Projectile': 'aqua',
         'LastEntity': 'yellow'
-    }
+    } as const
 
     let customIcon : string | undefined;
 
@@ -47,8 +48,8 @@
     let tag: Tag | undefined;
     if(item.item instanceof BlockTag) {
         // TODO: check codeblock, not just action
-        tag = (actiondump?.actions.find(a => a.name == item.item.data.action)?.tags ?? []).find(t => t.name == item.item.data.tag);
-        customIcon = tag?.options.find(o => item.item.data.option == o.name)?.icon.material;
+        tag = (actiondump?.actions.find(a => item.item instanceof BlockTag && a.name == item.item.data.action)?.tags ?? []).find(t => item.item instanceof BlockTag && t.name == item.item.data.tag);
+        customIcon = tag?.options.find(o => item.item instanceof BlockTag && item.item.data.option == o.name)?.icon.material;
     }
 </script>
 
@@ -70,11 +71,22 @@
                     <span class="aqua"><span class="cyan">»</span> {item.item.data.option}</span>
                 {/if}
             {/if}
-            {#if item.item instanceof Named}
-                <ColoredText text={item.item.data.name} />
+            {#if item.item instanceof Text}
+                <span>{item.item.data.name}</span>
             {/if}
-            {#if item.item.id == 'var'}
+            {#if item.item instanceof Component}
+                <!-- TODO: Minimessage. Fonts sound like a pain. -->
+                <span>{item.item.data.name}</span>
+            {/if}
+            {#if item.item instanceof Number}
+                <span class="red">{item.item.data.name}</span>
+            {/if}
+            {#if item.item instanceof Variable}
+                <span class="yellow">{item.item.data.name}</span>
                 <br> <span class={item.item.data.scope}>{scopeToName[item.item.data.scope]}</span>
+            {/if}
+            {#if item.item instanceof Parameter}
+                <span class="param">{item.item.data.name}</span>
             {/if}
             {#if item.item instanceof Location}
                 <span class="green">Location</span>
@@ -111,10 +123,34 @@
                 <br>
                 <span class={targetToColor[item.item.data.target ?? 'Default']}>{item.item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.item.data.target}</span>
             {/if}
+            {#if item.item instanceof Hint}
+                <span class="hint-green">Hint: {#if item.item.data.id == 'function'}Function Paramaters{:else}Invalid Hint{/if}</span>
+                {#if item.item.data.id == 'function'}
+                    <p class="lg">
+                    Put <span class="param">Parameter</span> items in this chest to set <br>
+                    the parameters of this function. <br>
+                    <br>
+                    In this code line, use the <span class="line">LINE</span> variable <br>
+                    scope to access the parameter values. <br>
+                    <br>
+                    <span class="LINE">LINE</span> variable items for each parameter <br>
+                    can be obtained by right clicking on a <br>
+                    <span class="param">Parameter</span> item in this chest.
+                    </p>
+                {:else}
+                    <span class="lg">Hint data was not found.</span>
+                    <span style="font-family: monospace;" class="dg">(id: {item.item.data.id})</span>
+                {/if}
+                <br><span class="dg">Shift-Click to remove hint</span>
+            {/if}
         </span>
     </div>
 
 <style>
+    p {
+        margin: 0;
+        padding: 0;
+    }
     .item {
         position: relative;
         background-size: cover;
@@ -146,6 +182,7 @@
     }
     
     .txt {background-image: url(./media/items/txt.png);}
+    .comp {background-image: url(./media/items/comp.png);}
     .num {background-image: url(./media/items/num.png);}
     .var {background-image: url(./media/items/var.png);}
     .snd {background-image: url(./media/items/snd.png);}
@@ -154,6 +191,8 @@
     .vec {background-image: url(./media/items/vec.png);}
     .part {background-image: url(./media/items/part.png);}
     .g_val {background-image: url(./media/items/g_val.png);}
+    .pn_el {background-image: url(./media/items/pn_el.png);}
+    .hint {background-image: url(./media/items/hint.png);}
 
     .green,
     .local {
@@ -165,10 +204,18 @@
     .unsaved {
         color: #AAA;
     }
+    .dark_gray,
+    .dg {
+        color: #555;
+    }
 
     .yellow,
     .saved {
         color: #FF5;
+    }
+
+    .line {
+        color: #5AF;
     }
 
     .red {
@@ -193,5 +240,12 @@
 
     .pot, .potion {
         color: #FF557F;
+    }
+
+    .pn_el, .param {
+        color: #AFA;
+    }
+    .hint-green {
+        color: #af5
     }
 </style>
