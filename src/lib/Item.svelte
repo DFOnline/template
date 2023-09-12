@@ -89,7 +89,8 @@
                 <span class="param">{item.data.name}</span> <br>
                 <span class="dg"><span class={item.data.type}>{item.data.type}</span> - <span class="lg">{item.data.description ?? item.data.name}</span></span> <br>
                 {#if item.data.default_value != null}
-                    <span class="lg"><span class="blue">⏵</span> Default = <span style="width: 100px; height: 100px; display: block;"> <svelte:self item={item.data.default_value} {actiondump} {endPoint}></svelte:self> </span> </span>
+                    <span class="lg"><span class="blue">⏵</span> Default = </span>
+                    <span style="--miniSlotSize: var(--slot-size,calc(var(--tooltip-scale,2) * 1px)); width: var(--miniSlotSize); height: var(--miniSlotSize); display: block;"> <svelte:self item={item.data.default_value} {actiondump} {endPoint}></svelte:self> </span>
                 {/if}
             {/if}
             {#if item instanceof Location}
