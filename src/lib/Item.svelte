@@ -128,7 +128,7 @@
                 <span class={targetToColor[item.data.target ?? 'Default']}>{item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.data.target}</span>
             {/if}
             {#if item instanceof Hint}
-                <span class="hint-green">Hint: {#if item.data.id == 'function'}Function Paramaters{:else}Invalid Hint{/if}</span>
+                <span class="hint-green">Hint: {#if item.data.id == 'function'}Function Parameters{:else}Invalid Hint{/if}</span>
                 {#if item.data.id == 'function'}
                     <p class="lg">
                     Put <span class="param">Parameter</span> items in this chest to set <br>
