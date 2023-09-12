@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { Argument, Location, Vector, Sound, Potion, GameValue, MinecraftItem, BlockTag, ActionDump, Component, Variable, Parameter, Text, Hint, Number } from 'df.ts'
+    import { Argument, Location, Vector, Sound, Potion, GameValue, MinecraftItem, BlockTag, ActionDump, Component, Variable, Parameter, Text, Hint, Number, ArgumentItem } from 'df.ts'
     import ColoredText from './ColoredText.svelte';
     import { parse } from 'nbt-ts'
 	import type { Tag } from 'df.ts/lib/actiondump/action.js';
 
-    export let item: Argument;
+    export let item: ArgumentItem<any>;
     export let actiondump: ActionDump | undefined = undefined;
     export let endPoint = new URL('https://dfonline.dev/public/images');
 
@@ -40,92 +40,96 @@
     let customIcon : string | undefined;
 
     let parsed : any = null;
-    if(item.item instanceof MinecraftItem) {
-        parsed = parse(item.item.data.item)
+    if(item instanceof MinecraftItem) {
+        parsed = parse(item.data.item)
         customIcon = parsed.id.split(':')[1].toUpperCase();
     }
 
     let tag: Tag | undefined;
-    if(item.item instanceof BlockTag) {
+    if(item instanceof BlockTag) {
         // TODO: check codeblock, not just action
-        tag = (actiondump?.actions.find(a => item.item instanceof BlockTag && a.name == item.item.data.action)?.tags ?? []).find(t => item.item instanceof BlockTag && t.name == item.item.data.tag);
-        customIcon = tag?.options.find(o => item.item instanceof BlockTag && item.item.data.option == o.name)?.icon.material;
+        tag = (actiondump?.actions.find(a => item instanceof BlockTag && a.name == item.data.action)?.tags ?? []).find(t => item instanceof BlockTag && t.name == item.data.tag);
+        customIcon = tag?.options.find(o => item instanceof BlockTag && item.data.option == o.name)?.icon.material;
     }
 </script>
 
-    <div class={`item ${item.item.id}`} style={customIcon != null ? `background-image: url(${endPoint}/${customIcon}.png)` : undefined}>
+    <div class={`item ${item.id}`} style={customIcon != null ? `background-image: url(${endPoint}/${customIcon}.png)` : undefined}>
         <span class="tooltip">
-            {#if item.item instanceof MinecraftItem}
+            {#if item instanceof MinecraftItem}
                 {JSON.stringify(parsed)}
             {/if}
-            {#if item.item instanceof BlockTag}
-                <span class="yellow">Tag: {item.item.data.tag}</span>
+            {#if item instanceof BlockTag}
+                <span class="yellow">Tag: {item.data.tag}</span>
                 <br>
                 {#if actiondump != null}
                     {#each tag?.options ?? [] as option}
                     <br>
-                        <span class={item.item.data.option == option.name ? 'aqua' : 'lg'}>{#if item.item.data.option == option.name}<span class="cyan">»</span> {/if}{option.name}</span>
+                        <span class={item.data.option == option.name ? 'aqua' : 'lg'}>{#if item.data.option == option.name}<span class="cyan">»</span> {/if}{option.name}</span>
                     {/each}
                 {/if}
                 {#if actiondump == null}
-                    <span class="aqua"><span class="cyan">»</span> {item.item.data.option}</span>
+                    <span class="aqua"><span class="cyan">»</span> {item.data.option}</span>
                 {/if}
             {/if}
-            {#if item.item instanceof Text}
-                <span>{item.item.data.name}</span>
+            {#if item instanceof Text}
+                <span>{item.data.name}</span>
             {/if}
-            {#if item.item instanceof Component}
+            {#if item instanceof Component}
                 <!-- TODO: Minimessage. Fonts sound like a pain. -->
-                <span>{item.item.data.name}</span>
+                <span>{item.data.name}</span>
             {/if}
-            {#if item.item instanceof Number}
-                <span class="red">{item.item.data.name}</span>
+            {#if item instanceof Number}
+                <span class="red">{item.data.name}</span>
             {/if}
-            {#if item.item instanceof Variable}
-                <span class="yellow">{item.item.data.name}</span>
-                <br> <span class={item.item.data.scope}>{scopeToName[item.item.data.scope]}</span>
+            {#if item instanceof Variable}
+                <span class="yellow">{item.data.name}</span>
+                <br> <span class={item.data.scope}>{scopeToName[item.data.scope]}</span>
             {/if}
-            {#if item.item instanceof Parameter}
-                <span class="param">{item.item.data.name}</span>
-            {/if}
-            {#if item.item instanceof Location}
-                <span class="green">Location</span>
-                <br> <span class="lg">X: </span> <span>{numberDigits(item.item.data.loc.x)}</span>
-                <br> <span class="lg">Y: </span> <span>{numberDigits(item.item.data.loc.y)}</span>
-                <br> <span class="lg">Z: </span> <span>{numberDigits(item.item.data.loc.z)}</span>
-                {#if !item.item.data.isBlock}
-                    <br> <span class="lg">p: </span> <span>{numberDigits(item.item.data.loc.pitch ?? 0)}</span>
-                    <br> <span class="lg">y: </span> <span>{numberDigits(item.item.data.loc.yaw ?? 0)}</span>
+            {#if item instanceof Parameter}
+                <span class="param">{item.data.name}</span> <br>
+                <span class="dg"><span class={item.data.type}>{item.data.type}</span> - <span class="lg">{item.data.description ?? item.data.name}</span></span> <br>
+                {#if item.data.default_value != null}
+                    <span class="lg"><span class="blue">⏵</span> Default = <span style="width: 100px; height: 100px; display: block;"> <svelte:self item={item.data.default_value} {actiondump} {endPoint}></svelte:self> </span> </span>
                 {/if}
             {/if}
-            {#if item.item instanceof Vector}
+            {#if item instanceof Location}
+                <span class="green">Location</span>
+                <br> <span class="lg">X: </span> <span>{numberDigits(item.data.loc.x)}</span>
+                <br> <span class="lg">Y: </span> <span>{numberDigits(item.data.loc.y)}</span>
+                <br> <span class="lg">Z: </span> <span>{numberDigits(item.data.loc.z)}</span>
+                {#if !item.data.isBlock}
+                    <br> <span class="lg">p: </span> <span>{numberDigits(item.data.loc.pitch ?? 0)}</span>
+                    <br> <span class="lg">y: </span> <span>{numberDigits(item.data.loc.yaw ?? 0)}</span>
+                {/if}
+            {/if}
+            {#if item instanceof Vector}
                 <span class="vector">Vector</span>
-                <br> <span class="lg">X: </span> <span>{numberDigits(item.item.data.x)}</span>
-                <br> <span class="lg">Y: </span> <span>{numberDigits(item.item.data.y)}</span>
-                <br> <span class="lg">Z: </span> <span>{numberDigits(item.item.data.z)}</span>
+                <br> <span class="lg">X: </span> <span>{numberDigits(item.data.x)}</span>
+                <br> <span class="lg">Y: </span> <span>{numberDigits(item.data.y)}</span>
+                <br> <span class="lg">Z: </span> <span>{numberDigits(item.data.z)}</span>
             {/if}
-            {#if item.item instanceof Sound}
+            {#if item instanceof Sound}
                 <span class="blue">Sound</span>
-                <br> <span>{item.item.data.sound}</span>
+                <br> <span>{item.data.sound}</span>
                 <br>
-                <br> <span class="lg">Pitch: </span> <span>{item.item.data.pitch}</span>
-                <br> <span class="lg">Volume: </span> <span>{item.item.data.vol}</span>
+                <br> <span class="lg">Pitch: </span> <span>{item.data.pitch}</span>
+                <br> <span class="lg">Volume: </span> <span>{item.data.vol}</span>
             {/if}
-            {#if item.item instanceof Potion}
+            {#if item instanceof Potion}
                 <span class="pot">Potion</span>
-                <br> <span>{item.item.data.pot}</span>
+                <br> <span>{item.data.pot}</span>
                 <br>
-                <br> <span class="lg">Amplifier: </span> <span>{item.item.data.amp + 1}</span>
-                <br> <span class="lg">Duration: </span> <span>{item.item.data.dur >= 1000000 ? 'Infinite' : (item.item.data.dur % 20 == 0 ? `${Math.floor((item.item.data.dur / 20) / 60)}:${String((item.item.data.dur / 20) % 60).padStart(2, '0')}` : `${item.item.data.dur} ticks`)}</span>
+                <br> <span class="lg">Amplifier: </span> <span>{item.data.amp + 1}</span>
+                <br> <span class="lg">Duration: </span> <span>{item.data.dur >= 1000000 ? 'Infinite' : (item.data.dur % 20 == 0 ? `${Math.floor((item.data.dur / 20) / 60)}:${String((item.data.dur / 20) % 60).padStart(2, '0')}` : `${item.data.dur} ticks`)}</span>
             {/if}
-            {#if item.item instanceof GameValue}
-                <span>{item.item.data.type}</span>
+            {#if item instanceof GameValue}
+                <span>{item.data.type}</span>
                 <br>
-                <span class={targetToColor[item.item.data.target ?? 'Default']}>{item.item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.item.data.target}</span>
+                <span class={targetToColor[item.data.target ?? 'Default']}>{item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.data.target}</span>
             {/if}
-            {#if item.item instanceof Hint}
-                <span class="hint-green">Hint: {#if item.item.data.id == 'function'}Function Paramaters{:else}Invalid Hint{/if}</span>
-                {#if item.item.data.id == 'function'}
+            {#if item instanceof Hint}
+                <span class="hint-green">Hint: {#if item.data.id == 'function'}Function Paramaters{:else}Invalid Hint{/if}</span>
+                {#if item.data.id == 'function'}
                     <p class="lg">
                     Put <span class="param">Parameter</span> items in this chest to set <br>
                     the parameters of this function. <br>
@@ -139,7 +143,7 @@
                     </p>
                 {:else}
                     <span class="lg">Hint data was not found.</span>
-                    <span style="font-family: monospace;" class="dg">(id: {item.item.data.id})</span>
+                    <span style="font-family: monospace;" class="dg">(id: {item.data.id})</span>
                 {/if}
                 <br><span class="dg">Shift-Click to remove hint</span>
             {/if}

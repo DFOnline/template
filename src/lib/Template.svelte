@@ -77,7 +77,7 @@
                                                 <table>
                                                         {#each sortInventory(block.args) as item}
                                                             <td class={`slot`}>
-                                                                {#if item != null}<Item {item} {actiondump}/>{/if}
+                                                                {#if item != null}<Item item={item.item} {actiondump}/>{/if}
                                                             </td>
                                                         {/each}
                                                 </table>
