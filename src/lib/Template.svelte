@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { ActionBlock, ActionDump, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template as DFTemplate } from 'df.ts'
+    import { ActionBlock, ActionDump, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
 	import Item from './Item.svelte';
 
-    export let template: DFTemplate;
+    export let template: Template;
     export let actiondump: ActionDump | undefined = undefined;
     /**
      * If blocks in brackets should be shifted.
@@ -123,7 +123,7 @@
 
 <style>
     @font-face {
-        src: url('/MinecraftRegular-Bmg3.otf');
+        src: url('./media/MinecraftRegular-Bmg3.otf');
         font-family: 'Minecraft';
     }
 
@@ -164,7 +164,7 @@
         grid-template-rows: 1fr 1fr 1fr 1fr;
         flex-flow: column;
         text-align: center;
-        background-image: url('/blocks/sign.png');
+        background-image: url('./media/blocks/sign.png');
         background-size: contain;
     }
 
@@ -173,7 +173,7 @@
     }
 
     .chest {
-        background-image: url('/blocks/chest.png');
+        background-image: url('./media/blocks/chest.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center bottom;
@@ -185,7 +185,7 @@
     .right {
         height: var(--block-size,10em);
         width: var(--block-size,10em);
-        background-image: url('/blocks/stone.png');
+        background-image: url('./media/blocks/stone.png');
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center bottom;
@@ -193,24 +193,24 @@
     }
 
     /* I recognise this from somewhere */
-    .event         { background-image: url( /blocks/event.png         );}
-    .player_action { background-image: url( /blocks/player_action.png );}
-    .if_player     { background-image: url( /blocks/if_player.png     );}
-    .process       { background-image: url( /blocks/process.png       );}
-    .start_process { background-image: url( /blocks/start_process.png );}
-    .func          { background-image: url( /blocks/func.png          );}
-    .call_func     { background-image: url( /blocks/call_func.png     );}
-    .entity_event  { background-image: url( /blocks/entity_event.png  );}
-    .entity_action { background-image: url( /blocks/entity_action.png );}
-    .if_entity     { background-image: url( /blocks/if_entity.png     );}
-    .if_var        { background-image: url( /blocks/if_var.png        );}
-    .set_var       { background-image: url( /blocks/set_var.png       );}
-    .if_game       { background-image: url( /blocks/if_game.png       );}
-    .game_action   { background-image: url( /blocks/game_action.png   );}
-    .repeat        { background-image: url( /blocks/repeat.png        );}
-    .control       { background-image: url( /blocks/control.png       );}
-    .select_obj    { background-image: url( /blocks/select_obj.png    );}
-    .else          { background-image: url( /blocks/else.png          );}
+    .event         { background-image: url( ./media/blocks/event.png         );}
+    .player_action { background-image: url( ./media/blocks/player_action.png );}
+    .if_player     { background-image: url( ./media/blocks/if_player.png     );}
+    .process       { background-image: url( ./media/blocks/process.png       );}
+    .start_process { background-image: url( ./media/blocks/start_process.png );}
+    .func          { background-image: url( ./media/blocks/func.png          );}
+    .call_func     { background-image: url( ./media/blocks/call_func.png     );}
+    .entity_event  { background-image: url( ./media/blocks/entity_event.png  );}
+    .entity_action { background-image: url( ./media/blocks/entity_action.png );}
+    .if_entity     { background-image: url( ./media/blocks/if_entity.png     );}
+    .if_var        { background-image: url( ./media/blocks/if_var.png        );}
+    .set_var       { background-image: url( ./media/blocks/set_var.png       );}
+    .if_game       { background-image: url( ./media/blocks/if_game.png       );}
+    .game_action   { background-image: url( ./media/blocks/game_action.png   );}
+    .repeat        { background-image: url( ./media/blocks/repeat.png        );}
+    .control       { background-image: url( ./media/blocks/control.png       );}
+    .select_obj    { background-image: url( ./media/blocks/select_obj.png    );}
+    .else          { background-image: url( ./media/blocks/else.png          );}
 
     .bracket {
         margin-top: var(--block-size,10em);
@@ -225,10 +225,10 @@
         margin-left: var(--block-size,10em);
     }
     .bracket.norm {
-        background-image: url(/blocks/piston.png);
+        background-image: url(./media/blocks/piston.png);
     }
     .bracket.repeat {
-        background-image: url(/blocks/pistonSticky.png);
+        background-image: url(./media/blocks/pistonSticky.png);
     }
     .bracket.close {
         transform: scaleX(-1);

@@ -1,8 +1,8 @@
 import { SvelteComponent } from "svelte";
-import { ActionDump, type Template as DFTemplate } from 'df.ts';
+import { ActionDump } from 'df.ts';
 declare const __propDef: {
     props: {
-        template: DFTemplate;
+        template: Template;
         actiondump?: ActionDump | undefined;
         /**
              * If blocks in brackets should be shifted.

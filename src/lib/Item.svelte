@@ -161,7 +161,7 @@
         background-size: cover;
         height: 100%;
         widows: 100%;
-        background-image: url(/items/invalid.png)
+        background-image: url(./media/items/invalid.png)
     }
     .item .tooltip {
         visibility: hidden;
@@ -186,18 +186,18 @@
         visibility: visible;
     }
     
-    .txt {background-image: url(/items/txt.png);}
-    .comp {background-image: url(/items/comp.png);}
-    .num {background-image: url(/items/num.png);}
-    .var {background-image: url(/items/var.png);}
-    .snd {background-image: url(/items/snd.png);}
-    .pot {background-image: url(/items/pot.png);}
-    .loc {background-image: url(/items/loc.png);}
-    .vec {background-image: url(/items/vec.png);}
-    .part {background-image: url(/items/part.png);}
-    .g_val {background-image: url(/items/g_val.png);}
-    .pn_el {background-image: url(/items/pn_el.png);}
-    .hint {background-image: url(/items/hint.png);}
+    .txt {background-image: url(./media/items/txt.png);}
+    .comp {background-image: url(./media/items/comp.png);}
+    .num {background-image: url(./media/items/num.png);}
+    .var {background-image: url(./media/items/var.png);}
+    .snd {background-image: url(./media/items/snd.png);}
+    .pot {background-image: url(./media/items/pot.png);}
+    .loc {background-image: url(./media/items/loc.png);}
+    .vec {background-image: url(./media/items/vec.png);}
+    .part {background-image: url(./media/items/part.png);}
+    .g_val {background-image: url(./media/items/g_val.png);}
+    .pn_el {background-image: url(./media/items/pn_el.png);}
+    .hint {background-image: url(./media/items/hint.png);}
 
     .green,
     .local {
