@@ -1,5 +1,5 @@
 import { SvelteComponent } from "svelte";
-import { ActionDump } from 'df.ts';
+import { ActionDump, type Template } from 'df.ts';
 declare const __propDef: {
     props: {
         template: Template;

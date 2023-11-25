@@ -1,5 +1,5 @@
 import { SvelteComponent } from "svelte";
-import { ActionDump } from 'df.ts';
+import { ActionDump, ArgumentItem } from 'df.ts';
 declare const __propDef: {
     props: {
         item: ArgumentItem<any>;
