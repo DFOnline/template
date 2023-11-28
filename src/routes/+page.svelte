@@ -1,5 +1,6 @@
 <script lang="ts">
-	import Template from "$lib/Template.svelte";
+	import { Selection } from "$lib/Selection.js";
+    import Template from "$lib/Template.svelte";
     import { ActionDump, Template as CodeTemplate } from "df.ts";
 
     var stack = true;
@@ -16,7 +17,8 @@
         {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"pot","data":{"pot":"Speed","dur":1000000,"amp":0}},"slot":0}]},"action":""},
         {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"var","data":{"name":"hi","scope":"unsaved"}},"slot":0},{"item":{"id":"var","data":{"name":"hello","scope":"saved"}},"slot":1},{"item":{"id":"var","data":{"name":"morning","scope":"local"}},"slot":2},{"item":{"id":"var","data":{"name":"night","scope":"line"}},"slot":3}]},"action":""},
         {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"g_val","data":{"type":"Player Count","target":"Default"}},"slot":0},{"item":{"id":"g_val","data":{"type":"Current Health","target":"Default"}},"slot":1}]},"action":""}]
-        })
+        });
+    var selection = new Selection(0);
     var actiondump : ActionDump;
 
     var blockSize = "10em";
@@ -64,4 +66,4 @@
     </label>
 </div>
 
-<Template {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+<Template {stack} {openableChests} {template} {selection} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>

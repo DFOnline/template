@@ -1,15 +1,17 @@
 <script lang="ts">
     import { ActionBlock, ActionDump, Argument, ArgumentBlock, Arguments, Block, Bracket, DataBlock, idToName, type Template } from 'df.ts'
 	import Item from './Item.svelte';
+	import { Selection } from './Selection.js';
 
     export let template: Template;
+    export let selection: Selection;
     export let actiondump: ActionDump | undefined = undefined;
     /**
      * If blocks in brackets should be shifted.
      */
     export let stack: boolean = false;
     /**
-     * Allows disbaling of opening chests.
+     * Allows disabling of opening chests.
      */
     export let openableChests: boolean = true;
 
@@ -48,6 +50,10 @@
         }
     }
 
+    function blockClick(event : MouseEvent|KeyboardEvent, index: number) {
+        selection = new Selection(index);
+    }
+
     // TODO: move this in to df.ts Arguments
     function sortInventory(items?: Arguments) : (Argument | undefined)[] {
         const sorted = new Array(9*3);
@@ -60,7 +66,7 @@
 
 <ul>
     {#each template.blocks as block, i}
-        <li style={stack ? `padding-top: ${stackList[i] * 1.25}em;` : undefined}>
+        <div style={stack ? `padding-top: ${stackList[i] * 1.25}em;` : undefined} class={`blocky ${ selection.isSelected(i) ? 'selected' : ''}`} on:keydown={e => selection = selection.keyPress(e,template.blocks.length)} tabindex=0 role="toolbar">
             {#if block instanceof Bracket}
                 <div class={`bracket ${block.direct} ${block.type}`}></div>
             {/if}
@@ -88,7 +94,7 @@
                             </span>
                         {/if}
                     </div>
-                    <div class={`material ${block.block}`}>
+                    <div class={`material ${block.block}`} on:click={e => selection = selection.click(e,i)}>
                         <div class="sign">
                             {#if block.block != 'else'}
                                 <span>
@@ -117,7 +123,7 @@
                     <div class="right"></div>
                 {/if}
             {/if}
-        </li>
+        </div>
     {/each}
 </ul>
 
@@ -134,9 +140,13 @@
         display: flex;
     }
 
-    li {
+    div.blocky {
         height: calc(var(--block-size,var(--block-size,10em)) * 2);
         display: flex;
+    }
+
+    div.blocky.selected {
+        background-color: #3584e4;
     }
 
     .left {
