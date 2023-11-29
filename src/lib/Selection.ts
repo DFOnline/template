@@ -23,7 +23,6 @@ export class Selection {
         if(event.key != 'ArrowLeft' && event.key != 'ArrowRight') return this;
         event.preventDefault();
         const point = this.getNewCursor(event,size);
-        console.log(point)
         if(event.shiftKey) return new SelectionRange(point,this.cursor);
         return new Selection(point);
     }
@@ -34,6 +33,26 @@ export class Selection {
         if(event.key == 'Home') this.cursor = 0;
         if(event.key == 'End' && size != Infinity) point = size;
         return Math.min(Math.max(0,point),size - 1);
+    }
+}
+
+/**
+ * A selection which has nothing selected. 
+ * Still has a cursor, even if invisible.
+ */
+export class SelectionEmpty extends Selection {
+    constructor()
+    constructor(cursor :number)
+    constructor(cursor?:number) {
+        super(cursor ?? 0);
+    }
+
+    getSelected(): number[] {
+        return [];
+    }
+
+    isSelected(index: number): boolean {
+        return false;
     }
 }
 

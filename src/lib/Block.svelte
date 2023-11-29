@@ -14,29 +14,27 @@
 	import Item from './Item.svelte';
 
     import { createEventDispatcher } from 'svelte';
+	import { stringify } from 'nbt-ts';
 
-    const event = createEventDispatcher()
+    const event = createEventDispatcher<{'material':MouseEvent}>()
 
 	export let i: number;
 	export let block: TemplateBlock;
 	export let openableChests: boolean = true;
 
 	export let actiondump: ActionDump | undefined;
+	export let modal: any;
+
+	let modalMenu: {open: () => void, close: () => void};
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
-		if (event.target instanceof HTMLElement) {
-			let diag = event.target.classList.contains('bg') ? event.target.parentElement : event.target;
-			if (diag instanceof HTMLDialogElement) {
-				diag.close();
-			}
-		}
 		if ((event.target as HTMLElement).classList.contains('chest')) {
 			if (event instanceof KeyboardEvent) {
 				if (!(event.key === 'Enter' || event.key === ' ')) {
 					return;
 				}
 			}
-			((event.target as HTMLSpanElement).querySelector('dialog') as HTMLDialogElement).showModal();
+			modalMenu.open();
 		}
 	}
 
@@ -63,27 +61,23 @@
 					on:click={openableChests ? chestClick : undefined}
 					on:keydown={openableChests ? chestClick : undefined}
 					role="button"
-					tabindex="0"
+					tabindex=-1
 				>
 					{#if openableChests}
-						<dialog style="cursor: auto;">
-							<div class="bg">
-								<div>
-									<h1>
-										{i + 1}: {idToName.get(block.block)}
-										{#if block instanceof DataBlock || block instanceof ActionBlock}
-											{block.secondLine}{/if}
-									</h1>
-									<table>
-										{#each sortInventory(block.args) as item}
-											<td class={`slot`}>
-												{#if item != null}<Item item={item.item} {actiondump} />{/if}
-											</td>
-										{/each}
-									</table>
-								</div>
-							</div>
-						</dialog>
+						<svelte:component this={modal} bind:this={modalMenu}>
+							<h1>
+								{i + 1}: {idToName.get(block.block)}
+								{#if block instanceof DataBlock || block instanceof ActionBlock}
+									{block.secondLine}{/if}
+							</h1>
+							<table>
+								{#each sortInventory(block.args) as item}
+									<td class={`slot`}>
+										{#if item != null}<Item item={item.item} {actiondump} />{/if}
+									</td>
+								{/each}
+							</table>
+						</svelte:component>
 					{/if}
 				</span>
 			{/if}
@@ -93,7 +87,7 @@
 			on:click={(e) => (event('material',e))}
 			on:keypress={() => undefined}
 			role="button"
-			tabindex="0"
+			tabindex=-1
 		>
 			<div class="sign">
 				{#if block.block != 'else'}
@@ -120,7 +114,9 @@
 		</div>
 	</div>
 	{#if !(block.block.includes('if') || block.block === 'repeat')}
-		<div class="right"></div>
+		<div class="right" 
+		on:click={(e) => (event('material',e))}
+		on:keypress={() => undefined} role="button" tabindex=-1></div>
 	{/if}
 {/if}
 
@@ -266,24 +262,12 @@
 		min-height: 100vh;
 	}
 
-	dialog > .bg {
-		width: 100vw;
-		height: 100vh;
-		display: flex;
-	}
 
-	dialog .bg > div {
-		margin: auto;
-		padding: 1em;
-		background: white;
-		border: solid 5px black;
-	}
-
-	dialog h1 {
+	h1 {
 		margin-top: 0;
 	}
 
-	dialog table {
+	table {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 		grid-auto-rows: 1fr 1fr 1fr;

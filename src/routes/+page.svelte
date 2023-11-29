@@ -2,6 +2,8 @@
 	import { Selection } from "$lib/Selection.js";
     import Template from "$lib/Template.svelte";
     import { ActionDump, Template as CodeTemplate } from "df.ts";
+    import Modal from '$lib/__test__/Modal.svelte';
+    import CustomModal from '$lib/__test__/CustomModal.svelte';
 
     let stack = true;
     let openableChests = true;
@@ -28,10 +30,29 @@
     async function db(event: Event) {
         actiondump = ActionDump.parse(JSON.parse(await ((event.target as HTMLInputElement).files ?? [])[0].text()));
     }
+
+    let modal : Modal | CustomModal;
+    let modalCheck = true;
+    $: modalStyle = modalCheck ? CustomModal : Modal;
 </script>
 
 <h1>template demo</h1>
 <p>Example page of template</p>
+
+<div style="margin: 0.5em; padding: 0.5em; outline: solid red 1px;">
+    <p style="margin: 0;">Test Modal</p>
+    <svelte:component this={modalStyle} bind:this={modal}>
+        <h1>Test Modal</h1>
+        <div style="display: flex">
+            <button>1</button>
+            <button>2</button>
+            <button>3</button>
+        </div>
+        <button on:click={modal.close}>Close</button>
+    </svelte:component>
+    <label>Use Custom Model Style <input type="checkbox" bind:checked={modalCheck} /> </label>
+    <button on:click={modal.open}>Open Modal</button>
+</div>
 
 <div style="position: sticky; width: max-content; left: 0">
     <div>
@@ -66,4 +87,4 @@
     </label>
 </div>
 
-<Template {stack} {openableChests} {template} {selection} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+<Template modal={modalStyle} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>

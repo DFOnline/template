@@ -1,11 +1,12 @@
 <script lang="ts">
 	import Block from './Block.svelte';
 	import { ActionDump, Bracket, type Template } from 'df.ts';
-	import type { Selection } from './Selection.js';
+	import { Selection, SelectionEmpty } from './Selection.js';
 
 	export let template: Template;
-	export let selection: Selection;
+	export let selection: Selection = new SelectionEmpty();
 	export let actiondump: ActionDump | undefined = undefined;
+	export let modal: any;
 	/**
 	 * If blocks in brackets should be shifted.
 	 */
@@ -14,6 +15,10 @@
 	 * Allows disabling of opening chests.
 	 */
 	export let openableChests: boolean = true;
+	/**
+	 * Allows selecting code
+	 */
+	export let selectable: boolean = true;
 
 	let stackList: number[];
 	if (stack) {
@@ -32,42 +37,64 @@
 			return i;
 		});
 	}
+	let list: HTMLDivElement;
+
+	function select(select: Selection) {
+		selection = select;
+		if (list != null) {
+			const child = list.children[select.cursor];
+			if (child instanceof HTMLElement) child.focus();
+		}
+	}
 </script>
 
-<ul>
+<div
+	class="template"
+	tabindex="0"
+	on:keydown={(e) => select(selection.keyPress(e, template.blocks.length))}
+	role="button"
+	bind:this={list}
+>
 	{#each template.blocks as block, i}
 		<div
 			style:padding-top={stack ? `${stackList[i] * 1.25}em;` : '0em'}
-			class="blocky"
+			class="block"
 			class:selected={selection.isSelected(i)}
-			on:keydown={(e) => (selection = selection.keyPress(e, template.blocks.length))}
-			tabindex="0"
+			tabindex="-1"
 			role="toolbar"
 		>
-			<Block {actiondump} {block} {i} on:material={e => selection.click(e,i)} {openableChests} />
+			<Block
+				{modal}
+				{actiondump}
+				{block}
+				{i}
+				on:material={(e) => select(selection.click(e.detail, i))}
+				{openableChests}
+			/>
 		</div>
 	{/each}
-</ul>
+</div>
 
-<style>
+<style class="template">
 	@font-face {
 		src: url('./media/MinecraftRegular-Bmg3.otf');
 		font-family: 'Minecraft';
 	}
 
-	ul {
+	div.template {
 		padding: 0;
 		margin: 0;
 		list-style: none;
 		display: flex;
 	}
 
-	div.blocky {
+	div.block {
 		height: calc(var(--block-size, var(--block-size, 10em)) * 2);
 		display: flex;
+		outline: none;
 	}
 
-	div.blocky.selected {
+	div.block.selected {
 		background-color: #3584e4;
 	}
 </style>
