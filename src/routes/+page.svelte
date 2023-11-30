@@ -4,6 +4,9 @@
     import { ActionDump, Template as CodeTemplate } from "df.ts";
     import Modal from '$lib/__test__/Modal.svelte';
     import CustomModal from '$lib/__test__/CustomModal.svelte';
+	import type { ComponentType, SvelteComponent } from "svelte";
+	import ContextMenu from "$lib/__test__/ContextMenu.svelte";
+    import type { Openable } from "$lib/Types.js";
 
     let stack = true;
     let openableChests = true;
@@ -31,15 +34,17 @@
         actiondump = ActionDump.parse(JSON.parse(await ((event.target as HTMLInputElement).files ?? [])[0].text()));
     }
 
+    let myCtx : ContextMenu;
+    
     let modal : Modal | CustomModal;
     let modalCheck = true;
-    $: modalStyle = modalCheck ? CustomModal : Modal;
+    $: modalStyle = (modalCheck ? CustomModal : Modal) as Openable;
 </script>
 
 <h1>template demo</h1>
 <p>Example page of template</p>
 
-<div style="margin: 0.5em; padding: 0.5em; outline: solid red 1px;">
+<div class="test">
     <p style="margin: 0;">Test Modal</p>
     <svelte:component this={modalStyle} bind:this={modal}>
         <h1>Test Modal</h1>
@@ -87,4 +92,26 @@
     </label>
 </div>
 
+<div class="test">
+    <button on:click={myCtx.open}>Show Context Menu</button>
+    <ContextMenu bind:this={myCtx}>
+        <div style="height: 4em; overflow: scroll; display: grid">
+            <button on:click={myCtx.close}>Save</button>
+            <button on:click={myCtx.close}>Exit</button>
+            <button on:click={myCtx.close}>New</button>
+            <button on:click={myCtx.close}>Help</button>
+            <button on:click={myCtx.close}>Uhm</button>
+            <button on:click={myCtx.close}>Close</button>
+        </div>
+    </ContextMenu>
+</div>
+
 <Template modal={modalStyle} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+
+<style>
+    .test {
+        margin: 0.5em;
+        padding: 0.5em;
+        outline: solid red 1px;
+    }
+</style>

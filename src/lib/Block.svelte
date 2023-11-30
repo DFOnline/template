@@ -15,6 +15,7 @@
 
     import { createEventDispatcher } from 'svelte';
 	import { stringify } from 'nbt-ts';
+	import type { Openable } from './Types.js';
 
     const event = createEventDispatcher<{'material':MouseEvent}>()
 
@@ -23,9 +24,9 @@
 	export let openableChests: boolean = true;
 
 	export let actiondump: ActionDump | undefined;
-	export let modal: any;
+	export let modal: Openable;
 
-	let modalMenu: {open: () => void, close: () => void};
+	let modalMenu: Openable;
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
 		if ((event.target as HTMLElement).classList.contains('chest')) {

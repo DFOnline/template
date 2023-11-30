@@ -2,11 +2,12 @@
 	import Block from './Block.svelte';
 	import { ActionDump, Bracket, type Template } from 'df.ts';
 	import { Selection, SelectionEmpty } from './Selection.js';
+	import type { Openable } from './Types.js';
 
 	export let template: Template;
 	export let selection: Selection = new SelectionEmpty();
 	export let actiondump: ActionDump | undefined = undefined;
-	export let modal: any;
+	export let modal: Openable;
 	/**
 	 * If blocks in brackets should be shifted.
 	 */
