@@ -50,10 +50,10 @@
 </script>
 
 {#if block instanceof Bracket}
-	<div class={`bracket ${block.direct} ${block.type}`}></div>
+	<div class={`bracket ${block.direct} ${block.type}`} role="button" tabindex="-1"></div>
 {/if}
 {#if block instanceof Block}
-	<div class="left">
+	<div class="left" contextmenu="">
 		<div class="top">
 			{#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
 				<span
@@ -253,15 +253,6 @@
 		transform: scaleX(-1);
 	}
 
-	dialog {
-		background: none;
-		border: none;
-		padding: 0;
-		margin: 0;
-		overflow: hidden;
-		min-width: 100vw;
-		min-height: 100vh;
-	}
 
 
 	h1 {

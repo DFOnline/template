@@ -1,5 +1,26 @@
+export interface SelectionRules {
+    direction: "horizontal" | "vertical";
+    allowRange: boolean;
+    allowMulti: boolean;
+    allowChange: boolean;
+}
+function getButtons(rules: SelectionRules['direction']) {
+    return [...rules == 'vertical' ? ['ArrowUp','ArrowDown'] as const : ['ArrowLeft','ArrowRight'] as const,'Home','End'] as const
+}
+
 export class Selection {
     cursor: number;
+    rules: SelectionRules = {
+        direction: 'horizontal',
+        allowRange: true,
+        allowMulti: true,
+        allowChange: true,
+    }
+
+    updateRules(rules: Partial<SelectionRules>) {
+        this.rules = {...this.rules, ...rules};
+        return this;
+    }
 
     constructor(cursor: number) {
         this.cursor = cursor;
@@ -14,24 +35,32 @@ export class Selection {
     }
 
     click(event: MouseEvent, clicked: number) : Selection {
-        if(event.shiftKey) return new SelectionRange(clicked,this.cursor);
-        else if(event.altKey) return new SelectionMulti(clicked,[this.cursor,clicked]);
+        if(!this.rules.allowRange) return this;
+        if(event.shiftKey && this.rules.allowRange) return new SelectionRange(clicked,this.cursor);
+        else if(event.altKey && this.rules.allowMulti) return new SelectionMulti(clicked,[this.cursor,clicked]);
         return new Selection(clicked);
     }
 
-    keyPress(event: KeyboardEvent, size = Infinity) : Selection {
-        if(event.key != 'ArrowLeft' && event.key != 'ArrowRight') return this;
+    keyPress(event: KeyboardEvent, size = Infinity) : Selection | void {
+        if(!this.rules.allowChange) return;
+        const buttons = getButtons(this.rules.direction);
+        if(!buttons.includes(event.key as any)) return;
         event.preventDefault();
         const point = this.getNewCursor(event,size);
-        if(event.shiftKey) return new SelectionRange(point,this.cursor);
+        if(event.shiftKey && this.rules.allowRange) return new SelectionRange(point,this.cursor);
         return new Selection(point);
     }
 
     getNewCursor(event: KeyboardEvent, size = Infinity) {
+        const buttons = getButtons(this.rules.direction);
         let point = this.cursor;
-        if(event.key == 'ArrowLeft' || event.key == 'ArrowRight') point = this.cursor + (event.key == 'ArrowRight' ? 1 : -1);
-        if(event.key == 'Home') this.cursor = 0;
-        if(event.key == 'End' && size != Infinity) point = size;
+        const back = buttons[0];
+        const next = buttons[1];
+        const home = buttons[2];
+        const end = buttons[3];
+        if(event.key == back || event.key == next) point = this.cursor + (event.key == next ? 1 : -1);
+        if(event.key == home) point = 0;
+        if(event.key == end && size != Infinity) point = size;
         return Math.min(Math.max(0,point),size - 1);
     }
 }
@@ -84,7 +113,7 @@ export class SelectionRange extends Selection {
         else return super.click(event,clicked);
     }
 
-    keyPress(event: KeyboardEvent, size = Infinity): Selection {
+    keyPress(event: KeyboardEvent, size = Infinity): Selection | void {
         if(!event.shiftKey) return super.keyPress(event,size);
         const point = this.getNewCursor(event,size);
         return new SelectionRange(point,this.start) 
@@ -110,6 +139,7 @@ export class SelectionMulti extends Selection {
     }
 
     getSelected(): number[] {
-        return [this.cursor, ...this.selected];
+        // Wrapped in [...Set(-)] to make sure the cursor doesn't duplicate anything
+        return [...new Set([this.cursor, ...this.selected])];
     }
 }

@@ -8,6 +8,7 @@
 	export let selection: Selection = new SelectionEmpty();
 	export let actiondump: ActionDump | undefined = undefined;
 	export let modal: Openable;
+	export let context: Openable;
 	/**
 	 * If blocks in brackets should be shifted.
 	 */
@@ -20,6 +21,10 @@
 	 * Allows selecting code
 	 */
 	export let selectable: boolean = true;
+	/**
+	 * Allow editing code
+	 */
+	export let editable: boolean = true;
 
 	let stackList: number[];
 	if (stack) {
@@ -40,19 +45,24 @@
 	}
 	let list: HTMLDivElement;
 
-	function select(select: Selection) {
+	function select(select: Selection | void) {
+		if (select == null) return;
 		selection = select;
-		if (list != null) {
-			const child = list.children[select.cursor];
-			if (child instanceof HTMLElement) child.focus();
-		}
+		const child = list.children[select.cursor];
+		if (child instanceof HTMLElement) child.focus();
 	}
+
+	let contextMenus: Openable[] = [];
 </script>
 
 <div
 	class="template"
 	tabindex="0"
 	on:keydown={(e) => select(selection.keyPress(e, template.blocks.length))}
+	on:contextmenu={() => {
+		const child = list.children[selection.cursor];
+		if (child instanceof HTMLElement) child.focus();
+	}}
 	role="button"
 	bind:this={list}
 >
@@ -63,6 +73,13 @@
 			class:selected={selection.isSelected(i)}
 			tabindex="-1"
 			role="toolbar"
+			on:contextmenu={editable
+				? (e) => {
+						e.preventDefault();
+						if (!selection.isSelected(i)) select(selection.click(e, i));
+						contextMenus[i].open();
+				  }
+				: undefined}
 		>
 			<Block
 				{modal}
@@ -72,6 +89,20 @@
 				on:material={(e) => select(selection.click(e.detail, i))}
 				{openableChests}
 			/>
+			<svelte:component this={context} bind:this={contextMenus[i]}>
+				<button
+					on:click={() => {
+						contextMenus[i].close();
+						const removeValFromIndex = selection.getSelected().toSorted((a,b) => a-b);
+
+						for (var index = removeValFromIndex.length -1; index >= 0; index--)
+						template.blocks.splice(removeValFromIndex[index],1);
+
+						select(new Selection(removeValFromIndex[0] - 1).updateRules(selection.rules));
+						template = template;
+					}}>Delete</button
+				>
+			</svelte:component>
 		</div>
 	{/each}
 </div>

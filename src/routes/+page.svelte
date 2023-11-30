@@ -8,8 +8,6 @@
 	import ContextMenu from "$lib/__test__/ContextMenu.svelte";
     import type { Openable } from "$lib/Types.js";
 
-    let stack = true;
-    let openableChests = true;
     let template = CodeTemplate.parse({"blocks":[
         {"id":"block","block":"func","args":{"items":[{"item":{"id":"pn_el","data":{"name":"name","type":"any","default_value":{"id":"num","data":{"name":"0"}},"plural":false,"optional":true}},"slot":0},{"item":{"id":"pn_el","data":{"name":"name","type":"var","plural":true,"optional":false}},"slot":1},{"item":{"id":"pn_el","data":{"name":"name","type":"dict","plural":true,"optional":true}},"slot":2},{"item":{"id":"pn_el","data":{"name":"name","type":"list","plural":false,"optional":false}},"slot":3},{"item":{"id":"pn_el","data":{"name":"name","type":"vec","plural":false,"optional":false,"description":"hi&ahi<green>hi","note":"&ahi<green>hi"}},"slot":4},{"item":{"id":"hint","data":{"id":"function"}},"slot":25},{"item":{"id":"bl_tag","data":{"option":"False","tag":"Is Hidden","action":"dynamic","block":"func"}},"slot":26}]},"data":""},
         {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"txt","data":{"name":"&astring! %default"}},"slot":0}]},"action":""},
@@ -25,10 +23,14 @@
         });
     let selection = new Selection(0);
     let actiondump : ActionDump;
-
+    
+    let stack = true;
+    let openableChests = true;
     let blockSize = "10em";
     let tooltipScale = "2.5";
     let slotSize = "3em";
+    let selectable = true;
+    let editable = true;
 
     async function db(event: Event) {
         actiondump = ActionDump.parse(JSON.parse(await ((event.target as HTMLInputElement).files ?? [])[0].text()));
@@ -39,6 +41,7 @@
     let modal : Modal | CustomModal;
     let modalCheck = true;
     $: modalStyle = (modalCheck ? CustomModal : Modal) as Openable;
+    let contextmenu = ContextMenu as Openable;
 </script>
 
 <h1>template demo</h1>
@@ -84,6 +87,14 @@
             Openable Chests?
             <input type="checkbox" bind:checked={openableChests}>
         </label>
+        <label>
+            Selectable?
+            <input type="checkbox" bind:checked={selectable}>
+        </label>
+        <label>
+            Editable?
+            <input type="checkbox" bind:checked={editable}>
+        </label>
     </div>
     <br>
     <label>
@@ -106,7 +117,7 @@
     </ContextMenu>
 </div>
 
-<Template modal={modalStyle} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+<Template context={contextmenu} modal={modalStyle} {editable} {selectable} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
 
 <style>
     .test {
