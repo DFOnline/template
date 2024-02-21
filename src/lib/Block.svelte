@@ -14,19 +14,21 @@
 	import Item from './Item.svelte';
 
     import { createEventDispatcher } from 'svelte';
-	import { stringify } from 'nbt-ts';
-	import type { Openable } from './Types.js';
+	import type { ModalComponent, ModalComponentType } from './Menu.js';
 
     const event = createEventDispatcher<{'material':MouseEvent}>()
 
 	export let i: number;
 	export let block: TemplateBlock;
 	export let openableChests: boolean = true;
+	export let editable: boolean = true;
 
 	export let actiondump: ActionDump | undefined;
-	export let modal: Openable;
+	export let modal: ModalComponentType;
+	export let ctx: ModalComponentType;
 
-	let modalMenu: Openable;
+	let modalMenu: ModalComponent;
+	let rclick : ModalComponent;
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
 		if ((event.target as HTMLElement).classList.contains('chest')) {
@@ -47,8 +49,18 @@
 		});
 		return sorted;
 	}
+
+	$: ctxEvent = editable ? (e: MouseEvent) => {
+		e.preventDefault();
+		rclick.open(e);
+	} : () => {}
 </script>
 
+<svelte:component this={ctx} bind:this={rclick}>
+	<button>NOT</button>
+	<button>LS-CANCEL</button>
+	<slot />
+</svelte:component>
 {#if block instanceof Bracket}
 	<div class={`bracket ${block.direct} ${block.type}`} role="button" tabindex="-1"></div>
 {/if}
@@ -87,6 +99,7 @@
 			class={`material ${block.block}`}
 			on:click={(e) => (event('material',e))}
 			on:keypress={() => undefined}
+			on:contextmenu={ctxEvent}
 			role="button"
 			tabindex=-1
 		>
@@ -117,6 +130,7 @@
 	{#if !(block.block.includes('if') || block.block === 'repeat')}
 		<div class="right" 
 		on:click={(e) => (event('material',e))}
+		on:contextmenu={ctxEvent}
 		on:keypress={() => undefined} role="button" tabindex=-1></div>
 	{/if}
 {/if}

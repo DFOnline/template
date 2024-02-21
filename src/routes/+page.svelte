@@ -4,9 +4,10 @@
     import { ActionDump, Template as CodeTemplate } from "df.ts";
     import Modal from '$lib/__test__/Modal.svelte';
     import CustomModal from '$lib/__test__/CustomModal.svelte';
-	import type { ComponentType, SvelteComponent } from "svelte";
 	import ContextMenu from "$lib/__test__/ContextMenu.svelte";
-    import type { Openable } from "$lib/Types.js";
+	import type { ModalComponentType } from "$lib/Menu.js";
+
+    let goodVariableName = true;
 
     let template = CodeTemplate.parse({"blocks":[
         {"id":"block","block":"func","args":{"items":[{"item":{"id":"pn_el","data":{"name":"name","type":"any","default_value":{"id":"num","data":{"name":"0"}},"plural":false,"optional":true}},"slot":0},{"item":{"id":"pn_el","data":{"name":"name","type":"var","plural":true,"optional":false}},"slot":1},{"item":{"id":"pn_el","data":{"name":"name","type":"dict","plural":true,"optional":true}},"slot":2},{"item":{"id":"pn_el","data":{"name":"name","type":"list","plural":false,"optional":false}},"slot":3},{"item":{"id":"pn_el","data":{"name":"name","type":"vec","plural":false,"optional":false,"description":"hi&ahi<green>hi","note":"&ahi<green>hi"}},"slot":4},{"item":{"id":"hint","data":{"id":"function"}},"slot":25},{"item":{"id":"bl_tag","data":{"option":"False","tag":"Is Hidden","action":"dynamic","block":"func"}},"slot":26}]},"data":""},
@@ -32,20 +33,23 @@
     let selectable = true;
     let editable = true;
 
+    let myCtx;
+
     async function db(event: Event) {
         actiondump = ActionDump.parse(JSON.parse(await ((event.target as HTMLInputElement).files ?? [])[0].text()));
     }
-
-    let myCtx : ContextMenu;
     
     let modal : Modal | CustomModal;
     let modalCheck = true;
-    $: modalStyle = (modalCheck ? CustomModal : Modal) as Openable;
-    let contextmenu = ContextMenu as Openable;
+    $: modalStyle = (modalCheck ? CustomModal : Modal) as ModalComponentType;
 </script>
 
 <h1>template demo</h1>
 <p>Example page of template</p>
+<label>
+    Make template scroll instead of max-content
+    <input type="checkbox" bind:checked={goodVariableName}>
+</label>
 
 <div class="test">
     <p style="margin: 0;">Test Modal</p>
@@ -60,6 +64,10 @@
     </svelte:component>
     <label>Use Custom Model Style <input type="checkbox" bind:checked={modalCheck} /> </label>
     <button on:click={modal.open}>Open Modal</button>
+    <ContextMenu bind:this={ctx}>
+        hello
+    </ContextMenu>
+    <div on:contextmenu|preventDefault={ctx.open} role="cell" tabindex=0>Right click me!</div>
 </div>
 
 <div style="position: sticky; width: max-content; left: 0">
@@ -117,7 +125,7 @@
     </ContextMenu>
 </div>
 
-<Template context={contextmenu} modal={modalStyle} {editable} {selectable} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+<Template context={contextMenu} modal={modalStyle} {editable} {selectable} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
 
 <style>
     .test {

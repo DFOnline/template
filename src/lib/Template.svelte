@@ -2,13 +2,13 @@
 	import Block from './Block.svelte';
 	import { ActionDump, Bracket, type Template } from 'df.ts';
 	import { Selection, SelectionEmpty } from './Selection.js';
-	import type { Openable } from './Types.js';
+	import type { ModalComponent, ModalComponentType } from './Menu.js';
 
 	export let template: Template;
 	export let selection: Selection = new SelectionEmpty();
 	export let actiondump: ActionDump | undefined = undefined;
-	export let modal: Openable;
-	export let context: Openable;
+	export let modal: ModalComponentType;
+	export let ctx: ModalComponentType;
 	/**
 	 * If blocks in brackets should be shifted.
 	 */
@@ -21,6 +21,7 @@
 	 * Allows selecting code
 	 */
 	export let selectable: boolean = true;
+	export let editable: boolean = true;
 	/**
 	 * Allow editing code
 	 */
@@ -66,7 +67,7 @@
 	role="button"
 	bind:this={list}
 >
-	{#each template.blocks as block, i}
+	{#each template.blocks as block, i (block)}
 		<div
 			style:padding-top={stack ? `${stackList[i] * 1.25}em;` : '0em'}
 			class="block"
@@ -88,21 +89,15 @@
 				{i}
 				on:material={(e) => select(selection.click(e.detail, i))}
 				{openableChests}
-			/>
-			<svelte:component this={context} bind:this={contextMenus[i]}>
-				<button
-					on:click={() => {
-						contextMenus[i].close();
-						const removeValFromIndex = selection.getSelected().toSorted((a,b) => a-b);
-
-						for (var index = removeValFromIndex.length -1; index >= 0; index--)
-						template.blocks.splice(removeValFromIndex[index],1);
-
-						select(new Selection(removeValFromIndex[0] - 1).updateRules(selection.rules));
-						template = template;
-					}}>Delete</button
-				>
-			</svelte:component>
+				{editable}
+				{ctx}
+			>
+			<button on:click|stopPropagation={() => {
+				console.log("hi")
+				template.blocks.splice(i,1);
+				template = template;
+			}}>Delete</button>
+			</Block>
 		</div>
 	{/each}
 </div>
