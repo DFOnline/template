@@ -5,7 +5,7 @@
     import Modal from '$lib/__test__/Modal.svelte';
     import CustomModal from '$lib/__test__/CustomModal.svelte';
 	import ContextMenu from "$lib/__test__/ContextMenu.svelte";
-	import type { ModalComponentType } from "$lib/Menu.js";
+	import type { ModalComponent, ModalComponentType } from "$lib/Menu.js";
 
     let goodVariableName = true;
 
@@ -33,7 +33,7 @@
     let selectable = true;
     let editable = true;
 
-    let myCtx;
+    let ctx: ContextMenu;
 
     async function db(event: Event) {
         actiondump = ActionDump.parse(JSON.parse(await ((event.target as HTMLInputElement).files ?? [])[0].text()));
@@ -64,10 +64,6 @@
     </svelte:component>
     <label>Use Custom Model Style <input type="checkbox" bind:checked={modalCheck} /> </label>
     <button on:click={modal.open}>Open Modal</button>
-    <ContextMenu bind:this={ctx}>
-        hello
-    </ContextMenu>
-    <div on:contextmenu|preventDefault={ctx.open} role="cell" tabindex=0>Right click me!</div>
 </div>
 
 <div style="position: sticky; width: max-content; left: 0">
@@ -112,20 +108,20 @@
 </div>
 
 <div class="test">
-    <button on:click={myCtx.open}>Show Context Menu</button>
-    <ContextMenu bind:this={myCtx}>
+    <button on:click={ctx.openStatic} on:contextmenu|preventDefault={ctx.open}>Show Context Menu</button>
+    <ContextMenu bind:this={ctx}>
         <div style="height: 4em; overflow: scroll; display: grid">
-            <button on:click={myCtx.close}>Save</button>
-            <button on:click={myCtx.close}>Exit</button>
-            <button on:click={myCtx.close}>New</button>
-            <button on:click={myCtx.close}>Help</button>
-            <button on:click={myCtx.close}>Uhm</button>
-            <button on:click={myCtx.close}>Close</button>
+            <button on:click={ctx.close}>Save</button>
+            <button on:click={ctx.close}>Exit</button>
+            <button on:click={ctx.close}>New</button>
+            <button on:click={ctx.close}>Help</button>
+            <button on:click={ctx.close}>Uhm</button>
+            <button on:click={ctx.close}>Close</button>
         </div>
     </ContextMenu>
 </div>
 
-<Template context={contextMenu} modal={modalStyle} {editable} {selectable} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
+<Template ctx={ContextMenu} modal={modalStyle} {editable} {selectable} {stack} {openableChests} {template} {actiondump} --tooltip-scale={tooltipScale} --block-size={blockSize} --slot-size={slotSize}/>
 
 <style>
     .test {

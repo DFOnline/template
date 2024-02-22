@@ -21,7 +21,6 @@
 	 * Allows selecting code
 	 */
 	export let selectable: boolean = true;
-	export let editable: boolean = true;
 	/**
 	 * Allow editing code
 	 */
@@ -52,8 +51,6 @@
 		const child = list.children[select.cursor];
 		if (child instanceof HTMLElement) child.focus();
 	}
-
-	let contextMenus: Openable[] = [];
 </script>
 
 <div
@@ -74,13 +71,6 @@
 			class:selected={selection.isSelected(i)}
 			tabindex="-1"
 			role="toolbar"
-			on:contextmenu={editable
-				? (e) => {
-						e.preventDefault();
-						if (!selection.isSelected(i)) select(selection.click(e, i));
-						contextMenus[i].open();
-				  }
-				: undefined}
 		>
 			<Block
 				{modal}
