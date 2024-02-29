@@ -14,11 +14,11 @@ interface ContextButtonTypes {
 }
 export class ContextButton<T extends keyof ContextButtonTypes> {
     type: T
-    label: ContextButtonTypes[T]
-    value?: any
+    label: string
+    value?: ContextButtonTypes[T]
     update: (value: ContextButtonTypes[T]) => void
 
-    constructor(type: T, label: ContextButtonTypes[T], update: (value: ContextButtonTypes[T]) => void, value?: any) {
+    constructor(type: T, label: string, update: (value: ContextButtonTypes[T]) => void, value?: ContextButtonTypes[T]) {
         this.type = type;
         this.label = label;
         this.update = update;

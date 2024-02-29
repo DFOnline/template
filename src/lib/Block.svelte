@@ -15,6 +15,7 @@
 
     import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
+	import { ContextButton, ContextMenu } from './ContextMenu.js';
 
     const event = createEventDispatcher<{'material':MouseEvent}>()
 
@@ -50,10 +51,10 @@
 		return sorted;
 	}
 
-	$: ctxEvent = editable ? (e: MouseEvent) => {
-		e.preventDefault();
-		rclick.open(e);
-	} : () => {}
+
+	function getContextMenu(): ContextMenu {
+		const Not = new ContextButton('checkbox','NOT',() => {})
+	}
 </script>
 
 <svelte:component this={ctx} bind:this={rclick}>
@@ -99,7 +100,6 @@
 			class={`material ${block.block}`}
 			on:click={(e) => (event('material',e))}
 			on:keypress={() => undefined}
-			on:contextmenu={ctxEvent}
 			role="button"
 			tabindex=-1
 		>
@@ -130,7 +130,6 @@
 	{#if !(block.block.includes('if') || block.block === 'repeat')}
 		<div class="right" 
 		on:click={(e) => (event('material',e))}
-		on:contextmenu={ctxEvent}
 		on:keypress={() => undefined} role="button" tabindex=-1></div>
 	{/if}
 {/if}
