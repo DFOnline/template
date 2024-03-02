@@ -3,6 +3,8 @@
 	import { ActionDump, Bracket, type Template } from 'df.ts';
 	import { Selection, SelectionEmpty } from './Selection.js';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
+	import { combineContextMenus, type ContextMenu } from './ContextMenu.js';
+	import ContextContents from './ContextContents.svelte';
 
 	export let template: Template;
 	export let selection: Selection = new SelectionEmpty();
@@ -51,15 +53,29 @@
 		const child = list.children[select.cursor];
 		if (child instanceof HTMLElement) child.focus();
 	}
+
+	let svelteBlocks: Block[] = [];
+	let currentCtx: ContextMenu | null = null;
+	let ctxElement: ModalComponent;
 </script>
 
+<svelte:component this={ctx} bind:this={ctxElement}>
+	<ContextContents ctx={currentCtx} />
+</svelte:component>
 <div
 	class="template"
 	tabindex="0"
 	on:keydown={(e) => select(selection.keyPress(e, template.blocks.length))}
-	on:contextmenu={() => {
+	on:contextmenu|preventDefault={(e) => {
+		const selected = selection.getSelected();
+		if (selected.length == 0) {
+			// Attach this to the actual block tbh
+		}
 		const child = list.children[selection.cursor];
 		if (child instanceof HTMLElement) child.focus();
+		const blocks = svelteBlocks.filter((_, i) => selected.includes(i));
+		currentCtx = combineContextMenus(...blocks.map((b) => b.getContextMenu()));
+		ctxElement.open(e);
 	}}
 	role="button"
 	bind:this={list}
@@ -80,14 +96,8 @@
 				on:material={(e) => select(selection.click(e.detail, i))}
 				{openableChests}
 				{editable}
-				{ctx}
-			>
-			<button on:click|stopPropagation={() => {
-				console.log("hi")
-				template.blocks.splice(i,1);
-				template = template;
-			}}>Delete</button>
-			</Block>
+				bind:this={svelteBlocks[i]}
+			/>
 		</div>
 	{/each}
 </div>

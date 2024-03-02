@@ -16,9 +16,9 @@ describe("Context Menus", () => {
         expect(combineContextMenus(A,B)).toStrictEqual(expectedResult)
     });
     test("Combine Values", () => {
-        const inputA1 = new ContextButton('input','inputA',n,0);
-        const inputB1 = new ContextButton('input','inputB',n,1);
-        const inputB2 = new ContextButton('input','inputB',n,2);
+        const inputA1 = new ContextButton('input','inputA',n,'0');
+        const inputB1 = new ContextButton('input','inputB',n,'1');
+        const inputB2 = new ContextButton('input','inputB',n,'2');
 
         const A = new ContextMenu(inputA1,inputB1);
         const B = new ContextMenu(inputA1,inputB2);
@@ -37,9 +37,9 @@ describe("Context Menus", () => {
         const A = new ContextMenu(versionA);
         const B = new ContextMenu(versionB);
 
-        combineContextMenus(A,B).items[0].update(undefined);
+        combineContextMenus(A,B).items[0].update('');
 
         expect(mockA).toHaveBeenCalled();
         expect(mockB).toHaveBeenCalled();
-    })
+    });
 })

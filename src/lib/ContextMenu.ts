@@ -1,5 +1,5 @@
 export class ContextMenu {
-    items: ContextButton<any>[]
+    items: ContextButton<ContextButtonType>[]
 
     constructor(...items: ContextButton<any>[]) {
         this.items = items;
@@ -12,7 +12,8 @@ interface ContextButtonTypes {
     "input": string
     "menu": ContextMenu
 }
-export class ContextButton<T extends keyof ContextButtonTypes> {
+export type ContextButtonType = keyof ContextButtonTypes
+export class ContextButton<T extends ContextButtonType> {
     type: T
     label: string
     value?: ContextButtonTypes[T]

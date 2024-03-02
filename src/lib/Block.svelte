@@ -13,11 +13,11 @@
 	} from 'df.ts';
 	import Item from './Item.svelte';
 
-    import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
 
-    const event = createEventDispatcher<{'material':MouseEvent}>()
+	const event = createEventDispatcher<{ material: MouseEvent }>();
 
 	export let i: number;
 	export let block: TemplateBlock;
@@ -26,10 +26,8 @@
 
 	export let actiondump: ActionDump | undefined;
 	export let modal: ModalComponentType;
-	export let ctx: ModalComponentType;
 
 	let modalMenu: ModalComponent;
-	let rclick : ModalComponent;
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
 		if ((event.target as HTMLElement).classList.contains('chest')) {
@@ -51,17 +49,40 @@
 		return sorted;
 	}
 
-
-	function getContextMenu(): ContextMenu {
-		const Not = new ContextButton('checkbox','NOT',() => {})
+	export function getContextMenu(): ContextMenu {
+		const buttons: ContextButton<any>[] = [];
+		if (block instanceof ActionBlock) {
+			if (block.block.includes('if')) {
+				const not = new ContextButton(
+					'checkbox',
+					'NOT',
+					(v) => {
+						(block as ActionBlock).not = v;
+						block = block;
+					},
+					block.not
+				);
+				buttons.push(not);
+			}
+			if (block.block.includes('event')) {
+				const Cancel = new ContextButton(
+					'checkbox',
+					'LC-CANCEL',
+					(v) => {
+						console.log(block);
+						(block as ActionBlock).cancelled = v;
+						block = block;
+						console.log(block);
+					},
+					block.cancelled
+				);
+				buttons.push(Cancel);
+			}
+		}
+		return new ContextMenu(...buttons);
 	}
 </script>
 
-<svelte:component this={ctx} bind:this={rclick}>
-	<button>NOT</button>
-	<button>LS-CANCEL</button>
-	<slot />
-</svelte:component>
 {#if block instanceof Bracket}
 	<div class={`bracket ${block.direct} ${block.type}`} role="button" tabindex="-1"></div>
 {/if}
@@ -75,7 +96,7 @@
 					on:click={openableChests ? chestClick : undefined}
 					on:keydown={openableChests ? chestClick : undefined}
 					role="button"
-					tabindex=-1
+					tabindex="-1"
 				>
 					{#if openableChests}
 						<svelte:component this={modal} bind:this={modalMenu}>
@@ -98,10 +119,10 @@
 		</div>
 		<div
 			class={`material ${block.block}`}
-			on:click={(e) => (event('material',e))}
+			on:click={(e) => event('material', e)}
 			on:keypress={() => undefined}
 			role="button"
-			tabindex=-1
+			tabindex="-1"
 		>
 			<div class="sign">
 				{#if block.block != 'else'}
@@ -128,9 +149,13 @@
 		</div>
 	</div>
 	{#if !(block.block.includes('if') || block.block === 'repeat')}
-		<div class="right" 
-		on:click={(e) => (event('material',e))}
-		on:keypress={() => undefined} role="button" tabindex=-1></div>
+		<div
+			class="right"
+			on:click={(e) => event('material', e)}
+			on:keypress={() => undefined}
+			role="button"
+			tabindex="-1"
+		></div>
 	{/if}
 {/if}
 
@@ -265,8 +290,6 @@
 	.bracket.close {
 		transform: scaleX(-1);
 	}
-
-
 
 	h1 {
 		margin-top: 0;
