@@ -5,7 +5,7 @@
 	import Modal from '$lib/__test__/Modal.svelte';
 	import CustomModal from '$lib/__test__/CustomModal.svelte';
 	import ContextMenu from '$lib/__test__/ContextMenu.svelte';
-	import type { ModalComponent, ModalComponentType } from '$lib/Menu.js';
+	import type { ModalComponentType } from '$lib/Menu.js';
 
 	let goodVariableName = true;
 
@@ -35,6 +35,70 @@
 				action: 'PlayersCond',
 				subAction: 'PNameEquals',
 				attribute: 'NOT'
+			},
+			{ id: 'bracket', direct: 'close', type: 'norm' },
+			{ id: 'block', block: 'if_player', args: { items: [] }, action: '' },
+			{ id: 'bracket', direct: 'open', type: 'norm' },
+			{
+				id: 'block',
+				block: 'player_action',
+				args: {
+					items: [
+						{
+							item: {
+								id: 'bl_tag',
+								data: {
+									option: 'True',
+									tag: 'Inherit Styles',
+									action: 'SendMessage',
+									block: 'player_action'
+								}
+							},
+							slot: 24
+						},
+						{
+							item: {
+								id: 'bl_tag',
+								data: {
+									option: 'Add spaces',
+									tag: 'Text Value Merging',
+									action: 'SendMessage',
+									block: 'player_action'
+								}
+							},
+							slot: 25
+						},
+						{
+							item: {
+								id: 'bl_tag',
+								data: {
+									option: 'Regular',
+									tag: 'Alignment Mode',
+									action: 'SendMessage',
+									block: 'player_action'
+								}
+							},
+							slot: 26
+						}
+					]
+				},
+				action: 'SendMessage'
+			},
+			{
+				id: 'block',
+				block: 'control',
+				args: {
+					items: [
+						{
+							item: {
+								id: 'bl_tag',
+								data: { option: 'Ticks', tag: 'Time Unit', action: 'Wait', block: 'control' }
+							},
+							slot: 26
+						}
+					]
+				},
+				action: 'Wait'
 			},
 			{ id: 'bracket', direct: 'close', type: 'norm' },
 			{ id: 'block', block: 'if_player', args: { items: [] }, action: '' },
@@ -207,21 +271,27 @@
 	</ContextMenu>
 </div>
 
-<Template
-	ctx={ContextMenu}
-	modal={modalStyle}
-	{editable}
-	{selectable}
-	{stack}
-	{openableChests}
-	{template}
-	{actiondump}
-	--tooltip-scale={tooltipScale}
-	--block-size={blockSize}
-	--slot-size={slotSize}
-/>
+<div style:width={'100vw'} style:overflow={goodVariableName ? 'scroll' : ''}>
+	<Template
+		ctx={ContextMenu}
+		modal={modalStyle}
+		{editable}
+		{selectable}
+		{stack}
+		{openableChests}
+		{template}
+		{actiondump}
+		--tooltip-scale={tooltipScale}
+		--block-size={blockSize}
+		--slot-size={slotSize}
+	/>
+</div>
 
 <style>
+	:global(html, body) {
+		color-scheme: dark;
+	}
+
 	.test {
 		margin: 0.5em;
 		padding: 0.5em;

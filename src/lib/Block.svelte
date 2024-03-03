@@ -16,6 +16,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
+	import ContextContents from './ContextContents.svelte';
 
 	const event = createEventDispatcher<{ material: MouseEvent }>();
 
@@ -23,6 +24,7 @@
 	export let block: TemplateBlock;
 	export let openableChests: boolean = true;
 	export let editable: boolean = true;
+	export let deleteButton: (() => void) | undefined = undefined;
 
 	export let actiondump: ActionDump | undefined;
 	export let modal: ModalComponentType;
@@ -79,12 +81,21 @@
 				buttons.push(Cancel);
 			}
 		}
+		if (deleteButton != null) {
+			buttons.push(new ContextButton('button', 'delete', deleteButton));
+		}
 		return new ContextMenu(...buttons);
 	}
 </script>
 
 {#if block instanceof Bracket}
-	<div class={`bracket ${block.direct} ${block.type}`} role="button" tabindex="-1"></div>
+	<div
+		class={`bracket ${block.direct} ${block.type}`}
+		role="button"
+		on:click={(e) => event('material', e)}
+		on:keypress={() => undefined}
+		tabindex="-1"
+	></div>
 {/if}
 {#if block instanceof Block}
 	<div class="left" contextmenu="">

@@ -7,7 +7,7 @@ export class ContextMenu {
 }
 
 interface ContextButtonTypes {
-    "button": string
+    "button": undefined
     "checkbox": boolean
     "input": string
     "menu": ContextMenu

@@ -54,6 +54,16 @@
 		if (child instanceof HTMLElement) child.focus();
 	}
 
+	let deleting: number[] = [];
+	function deleteBlock(index: number) {
+		deleting.push(index);
+		if (deleting.length != selection.getSelected().length) return;
+		template.blocks = template.blocks.filter((_, i) => !deleting.includes(i));
+		deleting = [];
+		ctxElement.close();
+		selection = new SelectionEmpty().updateRules(selection.rules);
+	}
+
 	let svelteBlocks: Block[] = [];
 	let currentCtx: ContextMenu | null = null;
 	let ctxElement: ModalComponent;
@@ -96,6 +106,7 @@
 				on:material={(e) => select(selection.click(e.detail, i))}
 				{openableChests}
 				{editable}
+				deleteButton={() => deleteBlock(i)}
 				bind:this={svelteBlocks[i]}
 			/>
 		</div>

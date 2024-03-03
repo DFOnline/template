@@ -21,6 +21,8 @@
 						button.update(button.type == 'checkbox' ? buttons[i].checked : buttons[i].value)}
 				/>
 			</label>
+		{:else}
+			<button on:click={() => button.update(undefined)}>{button.label}</button>
 		{/if}
 	{/each}
 {/if}
