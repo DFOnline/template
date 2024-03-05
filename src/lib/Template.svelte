@@ -22,7 +22,12 @@
 	/**
 	 * Allows selecting code
 	 */
-	export let selectable: boolean = true;
+	export let selectionMode:
+		| undefined
+		| boolean
+		| 'enabled'
+		| 'context-overwrites-single'
+		| 'context-overwrites-on-unselected' = 'context-overwrites-single';
 	/**
 	 * Allow editing code
 	 */
@@ -76,17 +81,6 @@
 	class="template"
 	tabindex="0"
 	on:keydown={(e) => select(selection.keyPress(e, template.blocks.length))}
-	on:contextmenu|preventDefault={(e) => {
-		const selected = selection.getSelected();
-		if (selected.length == 0) {
-			// Attach this to the actual block tbh
-		}
-		const child = list.children[selection.cursor];
-		if (child instanceof HTMLElement) child.focus();
-		const blocks = svelteBlocks.filter((_, i) => selected.includes(i));
-		currentCtx = combineContextMenus(...blocks.map((b) => b.getContextMenu()));
-		ctxElement.open(e);
-	}}
 	role="button"
 	bind:this={list}
 >
@@ -104,6 +98,23 @@
 				{block}
 				{i}
 				on:material={(e) => select(selection.click(e.detail, i))}
+				on:context={(e) => {
+					e.detail.preventDefault();
+					let selected = selection.getSelected();
+					if (
+						selected.length == 0 ||
+						(selectionMode == 'context-overwrites-single' && selected.length == 1) ||
+						(selectionMode == 'context-overwrites-on-unselected' && selected.includes(i))
+					) {
+						select(selection.click(e.detail, i));
+						selected = selection.getSelected();
+					}
+					const child = list.children[selection.cursor];
+					if (child instanceof HTMLElement) child.focus();
+					const blocks = svelteBlocks.filter((_, i) => selected.includes(i));
+					currentCtx = combineContextMenus(...blocks.map((b) => b.getContextMenu()));
+					ctxElement.open(e.detail);
+				}}
 				{openableChests}
 				{editable}
 				deleteButton={() => deleteBlock(i)}

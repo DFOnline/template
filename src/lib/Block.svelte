@@ -16,9 +16,8 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
-	import ContextContents from './ContextContents.svelte';
 
-	const event = createEventDispatcher<{ material: MouseEvent }>();
+	const event = createEventDispatcher<{ material: MouseEvent; context: MouseEvent }>();
 
 	export let i: number;
 	export let block: TemplateBlock;
@@ -93,6 +92,7 @@
 		class={`bracket ${block.direct} ${block.type}`}
 		role="button"
 		on:click={(e) => event('material', e)}
+		on:contextmenu={(e) => event('context', e)}
 		on:keypress={() => undefined}
 		tabindex="-1"
 	></div>
@@ -131,6 +131,7 @@
 		<div
 			class={`material ${block.block}`}
 			on:click={(e) => event('material', e)}
+			on:contextmenu={(e) => event('context', e)}
 			on:keypress={() => undefined}
 			role="button"
 			tabindex="-1"
@@ -163,6 +164,7 @@
 		<div
 			class="right"
 			on:click={(e) => event('material', e)}
+			on:contextmenu={(e) => event('context', e)}
 			on:keypress={() => undefined}
 			role="button"
 			tabindex="-1"

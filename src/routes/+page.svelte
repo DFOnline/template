@@ -176,7 +176,7 @@
 	let blockSize = '10em';
 	let tooltipScale = '2.5';
 	let slotSize = '3em';
-	let selectable = true;
+	let selectionMode = 'enabled';
 	let editable = true;
 
 	let ctx: ContextMenu;
@@ -241,7 +241,14 @@
 		</label>
 		<label>
 			Selectable?
-			<input type="checkbox" bind:checked={selectable} />
+			<select bind:value={selectionMode}>
+				<option value={false}>Off</option>
+				<option value={'enabled'}>On</option>
+				<option value={'context-overwrites-single'}
+					>On, rclick with single selection updates selection</option
+				>
+				<option value={'context-overwrites-on-unselected'}>On, rclick on unselected selects</option>
+			</select>
 		</label>
 		<label>
 			Editable?
@@ -276,7 +283,7 @@
 		ctx={ContextMenu}
 		modal={modalStyle}
 		{editable}
-		{selectable}
+		selectionMode
 		{stack}
 		{openableChests}
 		{template}

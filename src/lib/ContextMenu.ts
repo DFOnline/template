@@ -7,23 +7,26 @@ export class ContextMenu {
 }
 
 interface ContextButtonTypes {
-    "button": undefined
-    "checkbox": boolean
-    "input": string
-    "menu": ContextMenu
+    "button": { type: undefined, extras: { locked: boolean } }
+    "checkbox": { type: boolean, extras: { locked: boolean } }
+    "text": { type: string, extras: { locked: boolean, suggest: (value: string) => string[] } }
+    "number": { type: number, extras: { locked: boolean, min: number, max: number } }
+    "menu": { type: ContextMenu, extras: { locked: boolean } }
 }
 export type ContextButtonType = keyof ContextButtonTypes
 export class ContextButton<T extends ContextButtonType> {
     type: T
     label: string
-    value?: ContextButtonTypes[T]
-    update: (value: ContextButtonTypes[T]) => void
+    value?: ContextButtonTypes[T]['type']
+    update: (value: ContextButtonTypes[T]['type']) => void
+    extras?: Partial<ContextButtonTypes[T]['extras']>
 
-    constructor(type: T, label: string, update: (value: ContextButtonTypes[T]) => void, value?: ContextButtonTypes[T]) {
+    constructor(type: T, label: string, update: (value: ContextButtonTypes[T]['type']) => void, value?: ContextButtonTypes[T]['type'], extras?: Partial<ContextButtonTypes[T]['extras']>) {
         this.type = type;
         this.label = label;
         this.update = update;
         this.value = value;
+        this.extras = extras;
     }
 }
 
