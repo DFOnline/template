@@ -18,6 +18,8 @@
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
 
 	const event = createEventDispatcher<{ material: MouseEvent; context: MouseEvent }>();
+	const ctx = (e: MouseEvent) => event('context', e);
+	const mat = (e: MouseEvent) => event('material', e);
 
 	export let i: number;
 	export let block: TemplateBlock;
@@ -53,6 +55,10 @@
 	export function getContextMenu(): ContextMenu {
 		const buttons: ContextButton<any>[] = [];
 		if (block instanceof ActionBlock) {
+			if (true) {
+				const actionField = new ContextButton('text', 'Action', console.log, 'hi');
+				buttons.push(actionField);
+			}
 			if (block.block.includes('if')) {
 				const not = new ContextButton(
 					'checkbox',
@@ -91,14 +97,14 @@
 	<div
 		class={`bracket ${block.direct} ${block.type}`}
 		role="button"
-		on:click={(e) => event('material', e)}
-		on:contextmenu={(e) => event('context', e)}
+		on:click={mat}
+		on:contextmenu={ctx}
 		on:keypress={() => undefined}
 		tabindex="-1"
 	></div>
 {/if}
 {#if block instanceof Block}
-	<div class="left" contextmenu="">
+	<div class="left" on:contextmenu={ctx} role="button" tabindex="-1">
 		<div class="top">
 			{#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
 				<span
@@ -130,8 +136,7 @@
 		</div>
 		<div
 			class={`material ${block.block}`}
-			on:click={(e) => event('material', e)}
-			on:contextmenu={(e) => event('context', e)}
+			on:click={mat}
 			on:keypress={() => undefined}
 			role="button"
 			tabindex="-1"
@@ -163,8 +168,8 @@
 	{#if !(block.block.includes('if') || block.block === 'repeat')}
 		<div
 			class="right"
-			on:click={(e) => event('material', e)}
-			on:contextmenu={(e) => event('context', e)}
+			on:click={mat}
+			on:contextmenu={ctx}
 			on:keypress={() => undefined}
 			role="button"
 			tabindex="-1"
@@ -312,13 +317,13 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 		grid-auto-rows: 1fr 1fr 1fr;
-		outline: 4px solid black;
+		outline: 4px solid currentColor;
 		width: fit-content;
 	}
 
 	.slot {
 		aspect-ratio: 1;
-		outline: 2px solid black;
+		outline: 2px solid currentColor;
 		width: var(--slot-size, auto);
 	}
 </style>

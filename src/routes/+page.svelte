@@ -176,7 +176,7 @@
 	let blockSize = '10em';
 	let tooltipScale = '2.5';
 	let slotSize = '3em';
-	let selectionMode = 'enabled';
+	let selectionMode: any = 'enabled';
 	let editable = true;
 
 	let ctx: ContextMenu;
@@ -283,7 +283,7 @@
 		ctx={ContextMenu}
 		modal={modalStyle}
 		{editable}
-		selectionMode
+		{selectionMode}
 		{stack}
 		{openableChests}
 		{template}
@@ -295,8 +295,10 @@
 </div>
 
 <style>
-	:global(html, body) {
-		color-scheme: dark;
+	@media (prefers-color-scheme: dark) {
+		:global(html, body) {
+			color-scheme: dark;
+		}
 	}
 
 	.test {
