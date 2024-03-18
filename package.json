@@ -42,5 +42,9 @@
   },
   "devDependencies": {
     "@types/bun": "^1.0.8"
-  }
+  },
+  "trustedDependencies": [
+    "df.ts",
+    "svelte-preprocess"
+  ]
 }
