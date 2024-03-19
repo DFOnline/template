@@ -25,6 +25,7 @@
 	export let block: TemplateBlock;
 	export let openableChests: boolean = true;
 	export let editable: boolean = true;
+	export let draggable: boolean = false;
 	export let deleteButton: (() => void) | undefined = undefined;
 
 	export let actiondump: ActionDump | undefined;
@@ -76,10 +77,8 @@
 					'checkbox',
 					'LC-CANCEL',
 					(v) => {
-						console.log(block);
 						(block as ActionBlock).cancelled = v;
 						block = block;
-						console.log(block);
 					},
 					block.cancelled
 				);
@@ -93,91 +92,100 @@
 	}
 </script>
 
-{#if block instanceof Bracket}
-	<div
-		class={`bracket ${block.direct} ${block.type}`}
-		role="button"
-		on:click={mat}
-		on:contextmenu={ctx}
-		on:keypress={() => undefined}
-		tabindex="-1"
-	></div>
-{/if}
-{#if block instanceof Block}
-	<div class="left" on:contextmenu={ctx} role="button" tabindex="-1">
-		<div class="top">
-			{#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
-				<span
-					class:clickable={openableChests}
-					class="chest"
-					on:click={openableChests ? chestClick : undefined}
-					on:keydown={openableChests ? chestClick : undefined}
-					role="button"
-					tabindex="-1"
-				>
-					{#if openableChests}
-						<svelte:component this={modal} bind:this={modalMenu}>
-							<h1>
-								{i + 1}: {idToName.get(block.block)}
-								{#if block instanceof DataBlock || block instanceof ActionBlock}
-									{block.secondLine}{/if}
-							</h1>
-							<table>
-								{#each sortInventory(block.args) as item}
-									<td class={`slot`}>
-										{#if item != null}<Item item={item.item} {actiondump} />{/if}
-									</td>
-								{/each}
-							</table>
-						</svelte:component>
-					{/if}
-				</span>
-			{/if}
-		</div>
+<div class="block" {draggable} on:dragstart={(e) => console.log(e)} role="button" tabindex="-1">
+	{#if block instanceof Bracket}
 		<div
-			class={`material ${block.block}`}
-			on:click={mat}
-			on:keypress={() => undefined}
+			{draggable}
+			class={`bracket ${block.direct} ${block.type}`}
 			role="button"
-			tabindex="-1"
-		>
-			<div class="sign">
-				{#if block.block != 'else'}
-					<span>
-						{idToName.get(block.block)}
-					</span>
-				{/if}
-				<span>
-					{#if 'secondLine' in block}
-						{block.secondLine}
-					{/if}
-				</span>
-				<span>
-					{#if 'thirdLine' in block}
-						{block.thirdLine}
-					{/if}
-				</span>
-				<span>
-					{#if 'forthLine' in block}
-						{block.forthLine}
-					{/if}
-				</span>
-			</div>
-		</div>
-	</div>
-	{#if !(block.block.includes('if') || block.block === 'repeat')}
-		<div
-			class="right"
 			on:click={mat}
 			on:contextmenu={ctx}
 			on:keypress={() => undefined}
-			role="button"
 			tabindex="-1"
 		></div>
 	{/if}
-{/if}
+
+	{#if block instanceof Block}
+		<div class="left" on:contextmenu={ctx} role="button" tabindex="-1">
+			<div class="top">
+				{#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
+					<span
+						class:clickable={openableChests}
+						class="chest"
+						on:click={openableChests ? chestClick : undefined}
+						on:keydown={openableChests ? chestClick : undefined}
+						role="button"
+						tabindex="-1"
+					>
+						{#if openableChests}
+							<svelte:component this={modal} bind:this={modalMenu}>
+								<h1>
+									{i + 1}: {idToName.get(block.block)}
+									{#if block instanceof DataBlock || block instanceof ActionBlock}
+										{block.secondLine}{/if}
+								</h1>
+								<table>
+									{#each sortInventory(block.args) as item}
+										<td class={`slot`}>
+											{#if item != null}<Item item={item.item} {actiondump} />{/if}
+										</td>
+									{/each}
+								</table>
+							</svelte:component>
+						{/if}
+					</span>
+				{/if}
+			</div>
+			<div
+				class={`material ${block.block}`}
+				on:click={mat}
+				on:keypress={() => undefined}
+				role="button"
+				tabindex="-1"
+			>
+				<div class="sign">
+					{#if block.block != 'else'}
+						<span>
+							{idToName.get(block.block)}
+						</span>
+					{/if}
+					<span>
+						{#if 'secondLine' in block}
+							{block.secondLine}
+						{/if}
+					</span>
+					<span>
+						{#if 'thirdLine' in block}
+							{block.thirdLine}
+						{/if}
+					</span>
+					<span>
+						{#if 'forthLine' in block}
+							{block.forthLine}
+						{/if}
+					</span>
+				</div>
+			</div>
+		</div>
+		{#if !(block.block.includes('if') || block.block === 'repeat')}
+			<div
+				class="right"
+				on:click={mat}
+				on:contextmenu={ctx}
+				on:keypress={() => undefined}
+				role="button"
+				tabindex="-1"
+			></div>
+		{/if}
+	{/if}
+</div>
 
 <style>
+	.block {
+		display: flex;
+		width: fit-content;
+	}
+
 	.left {
 		height: calc(var(--block-size, var(--block-size, 10em)) * 2);
 		width: var(--block-size, 10em);

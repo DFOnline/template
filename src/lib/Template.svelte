@@ -95,14 +95,13 @@
 			class:selected={selection.isSelected(i)}
 			tabindex="-1"
 			role="toolbar"
-			draggable="true"
-			on:drag|preventDefault
 		>
 			<Block
 				{modal}
 				{actiondump}
 				{block}
 				{i}
+				draggable
 				on:material={realSelectionMode ? (e) => select(selection.click(e.detail, i)) : () => {}}
 				on:context={editable
 					? (e) => {
