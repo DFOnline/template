@@ -11,11 +11,11 @@
 		idToName,
 		ActionDump
 	} from 'df.ts';
-	import Item from './Item.svelte';
-
+	
 	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
+	import Inventory from './Inventory.svelte';
 
 	const event = createEventDispatcher<{ material: MouseEvent; context: MouseEvent }>();
 	const ctx = (e: MouseEvent) => event('context', e);
@@ -31,6 +31,8 @@
 	export let actiondump: ActionDump | undefined;
 	export let modal: ModalComponentType;
 
+	$: hasChest =
+		block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event');
 	let modalMenu: ModalComponent;
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
@@ -85,17 +87,27 @@
 				buttons.push(Cancel);
 			}
 		}
-		if (deleteButton != null) {
+		if (deleteButton != null && editable) {
 			buttons.push(new ContextButton('button', 'delete', deleteButton));
 		}
 		return new ContextMenu(...buttons);
 	}
 </script>
 
-<div class="block" {draggable} on:dragstart={(e) => console.log(e)} role="button" tabindex="-1">
+{#if openableChests && block instanceof ArgumentBlock}
+	<svelte:component this={modal} bind:this={modalMenu}>
+		<h1>
+			{i + 1}: {idToName.get(block.block)}
+			{#if block instanceof DataBlock || block instanceof ActionBlock}
+				{block.secondLine}{/if}
+		</h1>
+		<Inventory args={block.args ?? new Arguments()} {actiondump} {draggable} />
+	</svelte:component>
+{/if}
+
+<div class="block" draggable={draggable && editable} on:dragstart={(e) => console.log(e)} role="button" tabindex="-1">
 	{#if block instanceof Bracket}
 		<div
-			{draggable}
 			class={`bracket ${block.direct} ${block.type}`}
 			role="button"
 			on:click={mat}
@@ -108,7 +120,7 @@
 	{#if block instanceof Block}
 		<div class="left" on:contextmenu={ctx} role="button" tabindex="-1">
 			<div class="top">
-				{#if block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event')}
+				{#if hasChest}
 					<span
 						class:clickable={openableChests}
 						class="chest"
@@ -117,22 +129,6 @@
 						role="button"
 						tabindex="-1"
 					>
-						{#if openableChests}
-							<svelte:component this={modal} bind:this={modalMenu}>
-								<h1>
-									{i + 1}: {idToName.get(block.block)}
-									{#if block instanceof DataBlock || block instanceof ActionBlock}
-										{block.secondLine}{/if}
-								</h1>
-								<table>
-									{#each sortInventory(block.args) as item}
-										<td class={`slot`}>
-											{#if item != null}<Item item={item.item} {actiondump} />{/if}
-										</td>
-									{/each}
-								</table>
-							</svelte:component>
-						{/if}
 					</span>
 				{/if}
 			</div>
@@ -239,7 +235,7 @@
 		margin-top: var(--block-size, 10em);
 	}
 
-	/* I recognise this from somewhere */
+	/* I recognize this from somewhere */
 	.event {
 		background-image: url(./media/blocks/event.png);
 	}
@@ -319,19 +315,5 @@
 
 	h1 {
 		margin-top: 0;
-	}
-
-	table {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-		grid-auto-rows: 1fr 1fr 1fr;
-		outline: 4px solid currentColor;
-		width: fit-content;
-	}
-
-	.slot {
-		aspect-ratio: 1;
-		outline: 2px solid currentColor;
-		width: var(--slot-size, auto);
 	}
 </style>

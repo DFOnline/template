@@ -7,6 +7,7 @@
     export let item: ArgumentItem<any>;
     export let actiondump: ActionDump | undefined = undefined;
     export let endPoint = new URL('https://dfonline.dev/public/images');
+    export let draggable: boolean | undefined = undefined;
 
     /**
      * How df shows numbers in various values.
@@ -53,8 +54,9 @@
     }
 </script>
 
-    <div class={`item ${item.id}`} style={customIcon != null ? `background-image: url(${endPoint}/${customIcon}.png)` : undefined}>
+    <div class={`item ${item.id}`} style={customIcon != null ? `background-image: url(${endPoint}/${customIcon}.png)` : undefined} {draggable} on:dragstart on:dragend role="cell" tabindex="0">
         <span class="tooltip">
+            {(item.constructor.name)}
             {#if item instanceof MinecraftItem}
                 {JSON.stringify(parsed)}
             {/if}
