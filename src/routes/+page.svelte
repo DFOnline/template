@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { Selection } from '$lib/Selection.js';
 	import Template from '$lib/Template.svelte';
-	import { ActionDump, Template as CodeTemplate } from 'df.ts';
 	import Modal from '$lib/__test__/Modal.svelte';
 	import CustomModal from '$lib/__test__/CustomModal.svelte';
 	import ContextMenu from '$lib/__test__/ContextMenu.svelte';
 	import type { ModalComponentType } from '$lib/Menu.js';
+	import type template from '../lib/types/Template.js';
 
 	let goodVariableName = true;
 
 	//#region Template Data
-	let template = CodeTemplate.parse({"blocks":[
+	let template: template = ({"blocks":[
 	    {"id":"block","block":"func","args":{"items":[{"item":{"id":"pn_el","data":{"name":"name","type":"any","default_value":{"id":"num","data":{"name":"0"}},"plural":false,"optional":true}},"slot":0},{"item":{"id":"pn_el","data":{"name":"name","type":"var","plural":true,"optional":false}},"slot":1},{"item":{"id":"pn_el","data":{"name":"name","type":"dict","plural":true,"optional":true}},"slot":2},{"item":{"id":"pn_el","data":{"name":"name","type":"list","plural":false,"optional":false}},"slot":3},{"item":{"id":"pn_el","data":{"name":"name","type":"vec","plural":false,"optional":false,"description":"hi&ahi<green>hi","note":"&ahi<green>hi"}},"slot":4},{"item":{"id":"hint","data":{"id":"function"}},"slot":25},{"item":{"id":"bl_tag","data":{"option":"False","tag":"Is Hidden","action":"dynamic","block":"func"}},"slot":26}]},"data":""},
 	    {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"txt","data":{"name":"&astring! %default"}},"slot":0}]},"action":""},
 	    {"id":"block","block":"player_action","args":{"items":[{"item":{"id":"comp","data":{"name":"<green>hi"}},"slot":0}]},"action":""},

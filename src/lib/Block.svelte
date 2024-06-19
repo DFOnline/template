@@ -1,16 +1,17 @@
 <script lang="ts">
-	import {
-		Block,
-		Bracket,
-		ArgumentBlock,
-		Arguments,
-		Argument,
-		TemplateBlock,
-		DataBlock,
-		ActionBlock,
-		idToName,
-		ActionDump
-	} from 'df.ts';
+	// import {
+	// 	Block,
+	// 	Bracket,
+	// 	ArgumentBlock,
+	// 	Arguments,
+	// 	Argument,
+	// 	TemplateBlock,
+	// 	DataBlock,
+	// 	ActionBlock,
+	// 	idToName,
+	// 	ActionDump
+	// } from 'df.ts';
+	import { isActionBlock, isArgumentBlock, isSubActionBlock, type ActionBlock, type Block } from '$lib/types/Template.js';
 	
 	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
@@ -22,17 +23,18 @@
 	const mat = (e: MouseEvent) => event('material', e);
 
 	export let i: number;
-	export let block: TemplateBlock;
+	export let block: Block;
 	export let openableChests: boolean = true;
 	export let editable: boolean = true;
 	export let draggable: boolean = false;
 	export let deleteButton: (() => void) | undefined = undefined;
 
+	type ActionDump = false;
 	export let actiondump: ActionDump | undefined;
 	export let modal: ModalComponentType;
 
 	$: hasChest =
-		block instanceof ArgumentBlock && block.block != 'call_func' && !block.block.includes('event');
+		isArgumentBlock(block) && block.block != 'call_func' && !block.block.includes('event');
 	let modalMenu: ModalComponent;
 
 	function chestClick(event: MouseEvent | KeyboardEvent) {
@@ -57,7 +59,7 @@
 
 	export function getContextMenu(): ContextMenu {
 		const buttons: ContextButton<any>[] = [];
-		if (block instanceof ActionBlock) {
+		if (isActionBlock(block)) {
 			if (true) {
 				const actionField = new ContextButton('text', 'Action', console.log, 'hi');
 				buttons.push(actionField);
@@ -67,10 +69,10 @@
 					'checkbox',
 					'NOT',
 					(v) => {
-						(block as ActionBlock).not = v;
+						block.attribute = v;
 						block = block;
 					},
-					block.not
+					block.attribute
 				);
 				buttons.push(not);
 			}
@@ -79,7 +81,7 @@
 					'checkbox',
 					'LC-CANCEL',
 					(v) => {
-						(block as ActionBlock).cancelled = v;
+						block.cancelled = v;
 						block = block;
 					},
 					block.cancelled

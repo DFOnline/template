@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Block from './Block.svelte';
-	import { ActionDump, Bracket, type Template } from 'df.ts';
+	import type Template from '$lib/types/Template.js';
 	import { Selection, SelectionEmpty } from './Selection.js';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { combineContextMenus, type ContextMenu } from './ContextMenu.js';
@@ -8,6 +8,7 @@
 
 	export let template: Template;
 	export let selection: Selection = new SelectionEmpty();
+	type ActionDump = unknown
 	export let actiondump: ActionDump | undefined = undefined;
 	export let modal: ModalComponentType;
 	export let ctx: ModalComponentType;
@@ -41,7 +42,7 @@
 	if (stack) {
 		let i: number = 0;
 		stackList = template.blocks.map((block) => {
-			if (block instanceof Bracket) {
+			if (block.id == 'bracket') {
 				if (block.direct == 'open') {
 					const old = i;
 					i++;
