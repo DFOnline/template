@@ -11,25 +11,39 @@
 	// 	idToName,
 	// 	ActionDump
 	// } from 'df.ts';
-	import { isActionBlock, isArgumentBlock, isSubActionBlock, type ActionBlock, type Block } from '$lib/types/Template.js';
-	
+	import {
+		isActionBlock,
+		isArgumentBlock,
+		isSelectionBlock,
+		isSubActionBlock,
+		type ActionBlock,
+		type Block,
+		type BracketOrBlock as BracketOrBlock,
+		isBlock,
+		isBracket,
+		isDataBlock,
+		idToName
+	} from '$lib/types/Template.js';
+
 	import { createEventDispatcher } from 'svelte';
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { ContextButton, ContextMenu } from './ContextMenu.js';
 	import Inventory from './Inventory.svelte';
+	import type Arguments from './types/Args.js';
+	import type { Argument } from './types/Args.js';
+	import type ActionDump from './types/ActionDump.js';
 
 	const event = createEventDispatcher<{ material: MouseEvent; context: MouseEvent }>();
 	const ctx = (e: MouseEvent) => event('context', e);
 	const mat = (e: MouseEvent) => event('material', e);
 
 	export let i: number;
-	export let block: Block;
+	export let block: BracketOrBlock;
 	export let openableChests: boolean = true;
 	export let editable: boolean = true;
 	export let draggable: boolean = false;
 	export let deleteButton: (() => void) | undefined = undefined;
 
-	type ActionDump = false;
 	export let actiondump: ActionDump | undefined;
 	export let modal: ModalComponentType;
 
@@ -49,13 +63,6 @@
 	}
 
 	// TODO: move this in to df.ts Arguments
-	function sortInventory(items?: Arguments): (Argument | undefined)[] {
-		const sorted = new Array(9 * 3);
-		items?.items.forEach((item) => {
-			sorted[item.slot] = Argument.parse(item);
-		});
-		return sorted;
-	}
 
 	export function getContextMenu(): ContextMenu {
 		const buttons: ContextButton<any>[] = [];
@@ -64,27 +71,29 @@
 				const actionField = new ContextButton('text', 'Action', console.log, 'hi');
 				buttons.push(actionField);
 			}
-			if (block.block.includes('if')) {
+			if (block.block.includes('if') && isSelectionBlock(block)) {
 				const not = new ContextButton(
 					'checkbox',
 					'NOT',
 					(v) => {
-						block.attribute = v;
+						if (!isSelectionBlock(block)) return;
+						block.attribute = v ? 'NOT' : '';
 						block = block;
 					},
-					block.attribute
+					block.attribute == 'NOT'
 				);
 				buttons.push(not);
 			}
-			if (block.block.includes('event')) {
+			if (block.block.includes('event') && isSelectionBlock(block)) {
 				const Cancel = new ContextButton(
 					'checkbox',
 					'LC-CANCEL',
 					(v) => {
-						block.cancelled = v;
+						if (!isSelectionBlock(block)) return;
+						block.attribute = v ? 'LS-CANCEL' : '';
 						block = block;
 					},
-					block.cancelled
+					block.attribute == 'LS-CANCEL'
 				);
 				buttons.push(Cancel);
 			}
@@ -96,19 +105,29 @@
 	}
 </script>
 
-{#if openableChests && block instanceof ArgumentBlock}
+{#if openableChests && isArgumentBlock(block)}
 	<svelte:component this={modal} bind:this={modalMenu}>
 		<h1>
 			{i + 1}: {idToName.get(block.block)}
-			{#if block instanceof DataBlock || block instanceof ActionBlock}
-				{block.secondLine}{/if}
+			{#if isDataBlock(block)}
+				{block.data}
+			{/if}
+			{#if isActionBlock(block)}
+				{block.action}
+			{/if}
 		</h1>
-		<Inventory args={block.args ?? new Arguments()} {actiondump} {draggable} />
+		<!-- <Inventory args={block.args ?? new Arguments()} {actiondump} {draggable} /> -->
 	</svelte:component>
 {/if}
 
-<div class="block" draggable={draggable && editable} on:dragstart={(e) => console.log(e)} role="button" tabindex="-1">
-	{#if block instanceof Bracket}
+<div
+	class="block"
+	draggable={draggable && editable}
+	on:dragstart={(e) => console.log(e)}
+	role="button"
+	tabindex="-1"
+>
+	{#if block.id == 'bracket'}
 		<div
 			class={`bracket ${block.direct} ${block.type}`}
 			role="button"
@@ -119,7 +138,7 @@
 		></div>
 	{/if}
 
-	{#if block instanceof Block}
+	{#if isBlock(block)}
 		<div class="left" on:contextmenu={ctx} role="button" tabindex="-1">
 			<div class="top">
 				{#if hasChest}
@@ -148,19 +167,27 @@
 						</span>
 					{/if}
 					<span>
-						{#if 'secondLine' in block}
-							{block.secondLine}
+						{#if isActionBlock(block)}
+							{block.action}
+						{/if}
+						{#if isDataBlock(block)}
+							{block.data}
 						{/if}
 					</span>
 					<span>
-						{#if 'thirdLine' in block}
-							{block.thirdLine}
+						{#if isSubActionBlock(block)}
+							{block.subAction}
+						{/if}
+						{#if isSelectionBlock(block)}
+							<!-- {block.} -->
 						{/if}
 					</span>
 					<span>
-						{#if 'forthLine' in block}
-							{block.forthLine}
-						{/if}
+						<!-- {#if block} block}
+							{block.}
+						{/if
+							{block.}
+						{/if} -->
 					</span>
 				</div>
 			</div>

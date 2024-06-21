@@ -5,10 +5,10 @@
 	import type { ModalComponent, ModalComponentType } from './Menu.js';
 	import { combineContextMenus, type ContextMenu } from './ContextMenu.js';
 	import ContextContents from './ContextContents.svelte';
+	import type ActionDump from './types/ActionDump.js';
 
 	export let template: Template;
 	export let selection: Selection = new SelectionEmpty();
-	type ActionDump = unknown
 	export let actiondump: ActionDump | undefined = undefined;
 	export let modal: ModalComponentType;
 	export let ctx: ModalComponentType;

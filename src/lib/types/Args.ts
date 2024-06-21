@@ -1,3 +1,6 @@
-type Args = any;
+interface Arguments {
+    items: Argument[]
+}
+export type Argument = any;
 
-export default Args;
+export default Arguments;

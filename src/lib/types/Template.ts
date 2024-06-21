@@ -1,10 +1,10 @@
-import type Args from "./Args.js"
+import type Arguments from "./Args.js"
 
 export default interface Template {
-    blocks: BracketsAndBlocks[]
+    blocks: BracketOrBlock[]
 }
 
-export type BracketsAndBlocks = Block | Bracket
+export type BracketOrBlock = Block | Bracket
 export type Block = ElseBlock | SelectionBlock | SubActionBlock | DataBlock
 
 export interface Bracket {
@@ -12,25 +12,32 @@ export interface Bracket {
     direct: 'open' | 'close'
     type: 'norm' | 'repeat'
 }
+export function isBracket(block: BracketOrBlock): block is Bracket {
+    return block.id == 'bracket';
+}
+export function isBlock(block: BracketOrBlock): block is Block {
+    return block.id == 'block';
+}
 
 export interface ElseBlock {
     id: 'block'
     block: 'else'
 }
-export function isElse(block: Block): block is ElseBlock {
-    return block.block == 'else';
+export function isElse(block: BracketOrBlock): block is ElseBlock {
+    return isBlock(block) && block.block == 'else';
 }
 
+type Attribute = '' | 'LS-CANCEL' | 'NOT';
 const SELECTION_BLOCKS = ['event','player_action','entity_event','entity_action','set_var','game_action','control','if_entity','if_game','if_player','if_var'] as const;
 export interface SelectionBlock {
     id: 'block'
     block: typeof SELECTION_BLOCKS[number]
-    action: string,
-    attribute: '' | 'LS-CANCEL' | 'NOT'
-    args: Args
+    action: string
+    attribute?: Attribute
+    args: Arguments
 }
-export function isSelectionBlock(block: Block): block is SelectionBlock {
-    return SELECTION_BLOCKS.includes(block.block as any);
+export function isSelectionBlock(block: BracketOrBlock): block is SelectionBlock {
+    return isBlock(block) && SELECTION_BLOCKS.includes(block.block as any);
 }
 
 const SUB_ACTION_BLOCKS = ['repeat','select_obj'] as const
@@ -38,11 +45,12 @@ export interface SubActionBlock {
     id: 'block'
     block: typeof SUB_ACTION_BLOCKS[number]
     action: string
-    subAction: string
-    args: Args
+    subAction?: string
+    attribute?: Attribute
+    args: Arguments
 }
-export function isSubActionBlock(block: Block): block is SubActionBlock {
-    return SUB_ACTION_BLOCKS.includes(block.block as any);
+export function isSubActionBlock(block: BracketOrBlock): block is SubActionBlock {
+    return isBlock(block) && SUB_ACTION_BLOCKS.includes(block.block as any);
 }
 
 const DATA_BLOCKS = ['func','call_func','process','start_process'] as const;
@@ -50,19 +58,19 @@ export interface DataBlock {
     id: 'block'
     block: typeof DATA_BLOCKS[number]
     data: string
-    args: Args
+    args: Arguments
 }
 
-export function isDataBlock(block: Block): block is DataBlock {
-    return DATA_BLOCKS.includes(block.block as any);
+export function isDataBlock(block: BracketOrBlock): block is DataBlock {
+    return isBlock(block) && DATA_BLOCKS.includes(block.block as any);
 }
 
 export type ArgumentBlock = DataBlock | ActionBlock;
-export function isArgumentBlock(block: Block): block is DataBlock | SelectionBlock | SubActionBlock {
+export function isArgumentBlock(block: BracketOrBlock): block is DataBlock | SelectionBlock | SubActionBlock {
     return isDataBlock(block) || isActionBlock(block);
 }
 export type ActionBlock = SelectionBlock | SubActionBlock;
-export function isActionBlock(block: Block): block is ActionBlock {
+export function isActionBlock(block: BracketOrBlock): block is ActionBlock {
     return isSelectionBlock(block) || isSubActionBlock(block)
 }
 
@@ -82,3 +90,8 @@ else if(block.id == 'block') {
         block.block
     }
 }
+
+const defaultBlockNames : [Block['block'], String][] = [["player_action","PLAYER ACTION"],["if_player","IF PLAYER"],["start_process","START PROCESS"],["call_func","CALL FUNCTION"],["control","CONTROL"],["set_var","SET VARIABLE"],["entity_event","ENTITY EVENT"],["event","PLAYER EVENT"],["func","FUNCTION"],["if_entity","IF ENTITY"],["entity_action","ENTITY ACTION"],["if_var","IF VARIABLE"],["select_obj","SELECT OBJECT"],["game_action","GAME ACTION"],["else","ELSE"],["process","PROCESS"],["repeat","REPEAT"],["if_game","IF GAME"]]
+
+export const idToName = new Map(defaultBlockNames);
+export const nameToId = new Map(defaultBlockNames.map(x => x.reverse()) as [String, Block['block']][]);
