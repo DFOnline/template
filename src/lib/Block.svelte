@@ -116,7 +116,7 @@
 				{block.action}
 			{/if}
 		</h1>
-		<!-- <Inventory args={block.args ?? new Arguments()} {actiondump} {draggable} /> -->
+		<Inventory args={block.args} {actiondump} {draggable} />
 	</svelte:component>
 {/if}
 
@@ -176,18 +176,16 @@
 					</span>
 					<span>
 						{#if isSubActionBlock(block)}
-							{block.subAction}
+							{block.subAction ?? ''}
 						{/if}
 						{#if isSelectionBlock(block)}
-							<!-- {block.} -->
+							{block.target ?? ''}
 						{/if}
 					</span>
 					<span>
-						<!-- {#if block} block}
-							{block.}
-						{/if
-							{block.}
-						{/if} -->
+						{#if isActionBlock(block)}
+							{block.attribute ?? ''}
+						{/if}
 					</span>
 				</div>
 			</div>

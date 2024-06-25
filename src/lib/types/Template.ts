@@ -29,10 +29,12 @@ export function isElse(block: BracketOrBlock): block is ElseBlock {
 
 type Attribute = '' | 'LS-CANCEL' | 'NOT';
 const SELECTION_BLOCKS = ['event','player_action','entity_event','entity_action','set_var','game_action','control','if_entity','if_game','if_player','if_var'] as const;
+const TARGETS = ['AllPlayers','Victim','Shooter','Damager','Killer','Default','Selection','Projectile','LastEntity'] as const;
 export interface SelectionBlock {
     id: 'block'
     block: typeof SELECTION_BLOCKS[number]
     action: string
+    target?: '' | typeof TARGETS[number]
     attribute?: Attribute
     args: Arguments
 }

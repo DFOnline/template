@@ -1,27 +1,10 @@
 <script lang="ts">
-	// import {
-	// 	Argument,
-	// 	Location,
-	// 	Vector,
-	// 	Sound,
-	// 	Potion,
-	// 	GameValue,
-	// 	MinecraftItem,
-	// 	BlockTag,
-	// 	ActionDump,
-	// 	Component,
-	// 	Variable,
-	// 	Parameter,
-	// 	Text,
-	// 	Hint,
-	// 	Number,
-	// 	ArgumentItem
-	// } from 'df.ts';
 	import ColoredText from './ColoredText.svelte';
 	import { parse } from 'nbt-ts';
-	// import type { Tag } from 'df.ts/lib/actiondump/action.js';
+	import type { BlockTag, Item } from './types/Args.js';
+	import type ActionDump from './types/ActionDump.js';
 
-	export let item: ArgumentItem<any>;
+	export let item: Item;
 	export let actiondump: ActionDump | undefined = undefined;
 	export let endPoint = new URL('https://dfonline.dev/public/images');
 	export let draggable: boolean | undefined = undefined;
@@ -58,20 +41,18 @@
 	let customIcon: string | undefined;
 
 	let parsed: any = null;
-	if (item instanceof MinecraftItem) {
+	if (item.id == 'item') {
 		parsed = parse(item.data.item);
 		customIcon = parsed.id.split(':')[1].toUpperCase();
 	}
 
 	let tag: Tag | undefined;
-	if (item instanceof BlockTag) {
+	if (item.id == 'bl_tag') {
 		// TODO: check codeblock, not just action
-		tag = (
-			actiondump?.actions.find((a) => item instanceof BlockTag && a.name == item.data.action)
-				?.tags ?? []
-		).find((t) => item instanceof BlockTag && t.name == item.data.tag);
-		customIcon = tag?.options.find((o) => item instanceof BlockTag && item.data.option == o.name)
-			?.icon.material;
+		tag = (actiondump?.actions.find((a) => item && a.name == item.data.action)?.tags ?? []).find(
+			(t) => item && t.name == item.data.tag
+		);
+		customIcon = tag?.options.find((o) => item && item.data.option == o.name)?.icon.material;
 	}
 </script>
 
@@ -85,11 +66,10 @@
 	tabindex="0"
 >
 	<span class="tooltip">
-		{item.constructor.name}
-		{#if item instanceof MinecraftItem}
+		{#if item.id == 'item'}
 			{JSON.stringify(parsed)}
 		{/if}
-		{#if item instanceof BlockTag}
+		{#if item.id == 'bl_tag'}
 			<span class="yellow">Tag: {item.data.tag}</span>
 			<br />
 			{#if actiondump != null}
@@ -105,21 +85,21 @@
 				<span class="aqua"><span class="cyan">»</span> {item.data.option}</span>
 			{/if}
 		{/if}
-		{#if item instanceof Text}
+		{#if item.id == 'txt'}
 			<span>{item.data.name}</span>
 		{/if}
-		{#if item instanceof Component}
+		{#if item.id == 'comp'}
 			<!-- TODO: Minimessage. Fonts sound like a pain. -->
 			<span>{item.data.name}</span>
 		{/if}
-		{#if item instanceof Number}
+		{#if item.id == 'num'}
 			<span class="red">{item.data.name}</span>
 		{/if}
-		{#if item instanceof Variable}
+		{#if item.id == 'var'}
 			<span class="yellow">{item.data.name}</span>
 			<br /> <span class={item.data.scope}>{scopeToName[item.data.scope]}</span>
 		{/if}
-		{#if item instanceof Parameter}
+		{#if item.id == 'pn_el'}
 			<span class="param">{item.data.name}</span> <br />
 			<span class="dg"
 				><span class={item.data.type}>{item.data.type}</span> -
@@ -134,7 +114,7 @@
 				</span>
 			{/if}
 		{/if}
-		{#if item instanceof Location}
+		{#if item.id == 'loc'}
 			<span class="green">Location</span>
 			<br /> <span class="lg">X: </span> <span>{numberDigits(item.data.loc.x)}</span>
 			<br /> <span class="lg">Y: </span> <span>{numberDigits(item.data.loc.y)}</span>
@@ -144,20 +124,20 @@
 				<br /> <span class="lg">y: </span> <span>{numberDigits(item.data.loc.yaw ?? 0)}</span>
 			{/if}
 		{/if}
-		{#if item instanceof Vector}
+		{#if item.id == 'vec'}
 			<span class="vector">Vector</span>
 			<br /> <span class="lg">X: </span> <span>{numberDigits(item.data.x)}</span>
 			<br /> <span class="lg">Y: </span> <span>{numberDigits(item.data.y)}</span>
 			<br /> <span class="lg">Z: </span> <span>{numberDigits(item.data.z)}</span>
 		{/if}
-		{#if item instanceof Sound}
+		{#if item.id == 'snd'}
 			<span class="blue">Sound</span>
 			<br /> <span>{item.data.sound}</span>
 			<br />
 			<br /> <span class="lg">Pitch: </span> <span>{item.data.pitch}</span>
 			<br /> <span class="lg">Volume: </span> <span>{item.data.vol}</span>
 		{/if}
-		{#if item instanceof Potion}
+		{#if item.id == 'pot'}
 			<span class="pot">Potion</span>
 			<br /> <span>{item.data.pot}</span>
 			<br />
@@ -171,14 +151,14 @@
 						: `${item.data.dur} ticks`}</span
 			>
 		{/if}
-		{#if item instanceof GameValue}
+		{#if item.id == 'g_val'}
 			<span>{item.data.type}</span>
 			<br />
 			<span class={targetToColor[item.data.target ?? 'Default']}
 				>{item.data.target == 'LastEntity' ? 'Last-Spawned Entity' : item.data.target}</span
 			>
 		{/if}
-		{#if item instanceof Hint}
+		{#if item.id == 'hint'}
 			<span class="hint-green"
 				>Hint: {#if item.data.id == 'function'}Function Parameters{:else}Invalid Hint{/if}</span
 			>
