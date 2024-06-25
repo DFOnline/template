@@ -3,6 +3,7 @@
 	import { parse } from 'nbt-ts';
 	import type { BlockTag, Item } from './types/Args.js';
 	import type ActionDump from './types/ActionDump.js';
+	import type { Tag } from './types/ActionDump.js';
 
 	export let item: Item;
 	export let actiondump: ActionDump | undefined = undefined;
